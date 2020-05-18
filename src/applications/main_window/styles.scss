@@ -1,0 +1,50 @@
+::-webkit-scrollbar {
+  display: none;
+}
+
+.main-window {
+  height: 100%;
+  padding-left: 10px;
+  padding-right: 10px;
+
+  .mode-selector {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+
+    .mode {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 70px;
+
+      &:hover {
+        cursor: pointer;
+      }
+
+      svg {
+        font-size: 28px;
+        color: #D4D9DD;
+      }
+
+      &.active {
+        &:after {
+          content: " ";
+          color: #516BF0;
+          border-bottom-width:2px;
+          width: 80%;
+        }
+        svg {
+          color: #516BF0;
+        }
+      }
+    }
+  }
+
+  .input-sources {
+    margin-bottom: 20px;
+  }
+}

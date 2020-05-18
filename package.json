@@ -10,8 +10,12 @@
     "start": "npm run build && electron --enable-transparent-visuals --disable-gpu ./dist/electron.js"
   },
   "devDependencies": {
+    "@types/classnames": "^2.2.10",
+    "@types/dom-mediacapture-record": "^1.0.5",
+    "@types/lodash": "^4.14.151",
     "@types/react": "^16.9.35",
     "@types/react-dom": "^16.9.8",
+    "@types/webrtc": "^0.0.26",
     "copy-webpack-plugin": "^5.1.1",
     "css-loader": "^3.5.3",
     "electron": "^8.3.0",
@@ -27,8 +31,15 @@
     "webpack-cli": "^3.3.11"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.13.0",
+    "@fortawesome/fontawesome-svg-core": "^1.2.28",
+    "@fortawesome/free-solid-svg-icons": "^5.13.0",
+    "@fortawesome/react-fontawesome": "^0.1.9",
+    "bulma": "^0.8.2",
     "classnames": "^2.2.6",
+    "lodash": "^4.17.15",
     "react": "^16.13.1",
-    "react-dom": "^16.13.1"
+    "react-dom": "^16.13.1",
+    "video-stream-merger": "^3.4.0"
   }
 }
