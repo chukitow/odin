@@ -1,10 +1,11 @@
 import { useRef } from 'react';
 import { desktopCapturer, remote } from 'electron';
 import { writeFile } from 'fs';
+import log from 'electron-log';
 
 const useRecorder = (microphone: string) => {
   const mediaRecorder = useRef(null);
-  const recorderdChunks = [];
+  let recorderdChunks = [];
 
   const startRecording = async () => {
     try {
@@ -36,9 +37,12 @@ const useRecorder = (microphone: string) => {
 
       mediaRecorder.current.start();
       mediaRecorder.current.onstop = async () => {
+        log.info('creating file');
         const blob = new Blob(recorderdChunks, {
           type: 'video/webm'
         })
+
+        recorderdChunks = [];
 
         const buffer = Buffer.from(await blob.arrayBuffer());
         const { filePath } = await remote.dialog.showSaveDialog({
@@ -51,7 +55,8 @@ const useRecorder = (microphone: string) => {
       }
     }
     catch(e) {
-      console.log(e);
+      alert('There was an error proccesing the recording');
+      log.warn(e);
     }
   }
 
