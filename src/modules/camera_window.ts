@@ -14,12 +14,13 @@ class CameraWindow {
       maximizable: false,
       fullscreenable: false,
       frame: false,
-      movable: false,
+      movable: true,
       show: false,
       width: 200,
       height: 200,
       transparent: true,
       alwaysOnTop: true,
+      focusable: false,
       webPreferences: {
         nodeIntegration: true
       }
@@ -27,6 +28,7 @@ class CameraWindow {
 
     const query = querystring.stringify({ screen: 'camera', ...params});
     this.window.loadURL(`file://${app.getAppPath()}/index.html?${query}`);
+    this.window.setVisibleOnAllWorkspaces(true);
     this.show();
   }
 

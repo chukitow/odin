@@ -24,6 +24,7 @@ class MainWindow {
 
     this.window.loadURL(`file://${app.getAppPath()}/index.html`);
     this.window.on('close', this.onClose.bind(this));
+    this.window.setVisibleOnAllWorkspaces(true);
   }
 
   onClose(event: Electron.Event) {
