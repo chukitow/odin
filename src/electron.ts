@@ -2,11 +2,14 @@ import { app, Tray, Menu, ipcMain } from 'electron';
 import log from 'electron-log';
 import MainWindow from '@app/modules/main_window';
 import CameraWindow from '@app/modules/camera_window';
+import PreviewWindow from '@app/modules/preview_window';
 import application from '@app/modules/application';
+import { convert } from '@app/utils/converter';
 import * as path from 'path';
 let tray: Tray;
 let mainWindow : MainWindow;
 let cameraWindow : CameraWindow;
+let previewWindow : PreviewWindow;
 
 app.on('ready', createWindow);
 
@@ -72,6 +75,24 @@ ipcMain.on('CLOSE_CAMERA', () => {
 ipcMain.on('START_RECORDING', () => {
   log.info('Start recording');
   application.isRecording = true;
+});
+
+ipcMain.on('DISPLAY_PREVIEW', (_, data) => {
+  if(previewWindow) {
+    previewWindow.close();
+    previewWindow = null;
+  }
+
+  previewWindow = new PreviewWindow();
+  previewWindow.window.once('ready-to-show', () => {
+    previewWindow.show();
+    previewWindow.window.setTitle('Preview');
+    previewWindow.window.webContents.send('DID_MOUNT', data);
+  });
+});
+
+ipcMain.on('EXPORT', (_, data) => {
+  convert(data, previewWindow);
 })
 
 function closeCamera() {

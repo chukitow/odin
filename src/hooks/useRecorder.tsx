@@ -1,7 +1,9 @@
 import { useRef } from 'react';
-import { desktopCapturer, remote } from 'electron';
+import { desktopCapturer, ipcRenderer } from 'electron';
 import { writeFile } from 'fs';
 import log from 'electron-log';
+import tempy from 'tempy';
+import path from 'path';
 
 const useRecorder = (microphone: string) => {
   const mediaRecorder = useRef(null);
@@ -45,12 +47,14 @@ const useRecorder = (microphone: string) => {
         recorderdChunks = [];
 
         const buffer = Buffer.from(await blob.arrayBuffer());
-        const { filePath } = await remote.dialog.showSaveDialog({
-          buttonLabel: 'Save video',
-          defaultPath: `Screen-Recording-${Date.now()}.webm`
-        });
+        const filePath = path.join(tempy.directory(), `Screen-Recording-${Date.now()}.webm`);
+        writeFile(filePath, buffer, (err) => {
+          if(err) {
+            alert('There was an error proccesing the recording');
+            return;
+          }
 
-        writeFile(filePath, buffer, () => {
+          ipcRenderer.send('DISPLAY_PREVIEW', { filePath });
         });
       }
     }

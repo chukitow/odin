@@ -1,3 +1,4 @@
+const webpack = require('webpack');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
@@ -31,7 +32,12 @@ module.exports = [
       alias: {
         '@app': path.resolve(__dirname, 'src/')
       }
-    }
+    },
+    plugins: [
+      new webpack.DefinePlugin({
+        'process.env.FLUENTFFMPEG_COV': false
+      })
+    ]
   },
   {
     mode: 'development',
