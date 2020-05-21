@@ -11,8 +11,8 @@ module.exports = [
     },
     target: 'electron-main',
     node: {
-      __filename: true,
-      __dirname: true,
+      __filename: false,
+      __dirname: false,
     },
     module: {
       rules: [
@@ -24,7 +24,7 @@ module.exports = [
       ]
     },
     output: {
-      path: path.resolve(__dirname, 'dist'),
+      path: path.resolve(__dirname, 'build'),
       filename: '[name].js'
     },
     resolve: {
@@ -86,7 +86,7 @@ module.exports = [
       }
     },
     output: {
-      path: __dirname + '/dist',
+      path: __dirname + '/build',
       filename: '[name].js'
     },
     plugins: [
@@ -95,6 +95,9 @@ module.exports = [
       }),
       new CopyWebpackPlugin([
         { from:'src/assets',to:'assets' }
+      ]),
+      new CopyWebpackPlugin([
+        { from:'bin', to:'bin' }
       ]),
     ]
   },

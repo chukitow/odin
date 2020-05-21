@@ -27,27 +27,34 @@ const PreviewWindow : React.FC = () => {
   ]);
 
   const exportFile = async () => {
-    const { filePath } = await remote.dialog.showSaveDialog({
-      buttonLabel: 'Save Screen Recording',
-      defaultPath: `Screen-Recording-${Date.now()}.${format}`
-    });
+    try {
+      const { filePath } = await remote.dialog.showSaveDialog({
+        buttonLabel: 'Save',
+        defaultPath: `Screen-Recording-${Date.now()}.${format}`
+      });
 
-    const data = {
-      filePath,
-      src,
-      format,
-    };
 
-    setConverting(true);
-    ipcRenderer.send('EXPORT', data);
+      if(!filePath) {
+        return;
+      }
+
+      const data = {
+        filePath,
+        src,
+        format,
+      };
+
+      setConverting(true);
+      ipcRenderer.send('EXPORT', data);
+    } catch(err) {
+    }
   };
 
   return (
     <div className="preview-window">
-      {
-        src &&
-        <video src={src} controls autoPlay/>
-      }
+      <div className="video-container">
+        <video src={'/Users/chukitow/Desktop/Screen-Recording-1589991796743.mp4'} controls autoPlay/>
+      </div>
       <div className="tool-bar">
         {
           converting &&

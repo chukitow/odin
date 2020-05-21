@@ -17,6 +17,7 @@
 *.xcodeproj
 /.idea/
 /dist/
+/build/
 /external_binaries/
 /out/
 /vendor/.gclient
@@ -66,3 +67,6 @@ ts-gen
 # Used to accelerate CI builds
 .depshash
 .depshash-target
+electron-builder.json
+electron-builder.env
+electron_build/develop-id-mac.p12

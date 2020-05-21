@@ -1,11 +1,11 @@
-import { app, Tray, Menu, ipcMain } from 'electron';
+import { app, Tray, Menu, ipcMain, nativeImage } from 'electron';
 import log from 'electron-log';
 import MainWindow from '@app/modules/main_window';
 import CameraWindow from '@app/modules/camera_window';
 import PreviewWindow from '@app/modules/preview_window';
 import application from '@app/modules/application';
 import { convert } from '@app/utils/converter';
-import * as path from 'path';
+import path from 'path';
 let tray: Tray;
 let mainWindow : MainWindow;
 let cameraWindow : CameraWindow;
@@ -19,7 +19,7 @@ if(process.platform === 'darwin') {
 
 function createWindow() : void {
   log.info('Create Tray Window');
-  tray = new Tray(path.join(__dirname, './assets/icons/tray.png'));
+  tray = new Tray(nativeImage.createFromPath(path.join(__dirname, 'assets', 'icons', 'tray.png')));
   mainWindow = new MainWindow(tray);
   tray.on('right-click', () => {
     const menu = [
@@ -84,6 +84,7 @@ ipcMain.on('DISPLAY_PREVIEW', (_, data) => {
   }
 
   previewWindow = new PreviewWindow();
+  previewWindow.window.on('close', () => previewWindow = null);
   previewWindow.window.once('ready-to-show', () => {
     previewWindow.show();
     previewWindow.window.setTitle('Preview');

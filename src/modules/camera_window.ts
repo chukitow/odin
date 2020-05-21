@@ -1,4 +1,5 @@
-import { BrowserWindow, app, screen } from 'electron';
+import path from 'path';
+import { BrowserWindow, screen } from 'electron';
 import querystring from 'querystring';
 
 interface Params {
@@ -27,7 +28,7 @@ class CameraWindow {
     });
 
     const query = querystring.stringify({ screen: 'camera', ...params});
-    this.window.loadURL(`file://${app.getAppPath()}/index.html?${query}`);
+    this.window.loadURL(`file://${path.join(__dirname, 'index.html')}?${query}`);
     this.window.setVisibleOnAllWorkspaces(true);
     this.show();
   }

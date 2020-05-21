@@ -1,20 +1,21 @@
-import { BrowserWindow, app } from 'electron';
+import path from 'path'
+import { BrowserWindow } from 'electron';
 
 class PreviewWindow {
   public window: BrowserWindow;
   constructor() {
     this.window = new BrowserWindow({
       skipTaskbar: true,
-      resizable: false,
+      resizable: true,
       show: false,
-      width: 900,
-      height: 600,
+      minWidth: 900,
+      minHeight: 600,
       webPreferences: {
         nodeIntegration: true
       }
     });
 
-    this.window.loadURL(`file://${app.getAppPath()}/index.html?screen=preview`);
+    this.window.loadURL(`file://${path.join(__dirname, 'index.html')}?screen=preview`);
   }
 
   show() {

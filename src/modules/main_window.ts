@@ -1,4 +1,5 @@
-import { BrowserWindow, Tray, app } from 'electron';
+import path from 'path';
+import { BrowserWindow, Tray } from 'electron';
 import application from './application';
 
 class MainWindow {
@@ -21,8 +22,7 @@ class MainWindow {
         nodeIntegration: true
       }
     });
-
-    this.window.loadURL(`file://${app.getAppPath()}/index.html`);
+    this.window.loadURL(`file://${path.join(__dirname, 'index.html')}`);
     this.window.on('close', this.onClose.bind(this));
     this.window.setVisibleOnAllWorkspaces(true);
   }
