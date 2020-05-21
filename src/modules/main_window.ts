@@ -12,11 +12,11 @@ class MainWindow {
       skipTaskbar: true,
       maximizable: false,
       fullscreenable: false,
-      frame: false,
-      movable: false,
+      frame: process.platform != 'darwin',
+      movable: process.platform != 'darwin',
       show: false,
       width: 350,
-      height: 250,
+      height: process.platform == 'darwin' ? 250 : 280,
       alwaysOnTop: true,
       webPreferences: {
         nodeIntegration: true
@@ -35,11 +35,16 @@ class MainWindow {
   }
 
   show() {
-    const windowBounds = this.window.getBounds();
-    const trayBounds = this.tray.getBounds();
-    const x = Math.round(trayBounds.x + (trayBounds.width / 2) - (windowBounds.width / 2));
-    const y = Math.round(trayBounds.y + trayBounds.height);
-    this.window.setPosition(x, y, false);
+    if(process.platform == 'darwin') {
+      const windowBounds = this.window.getBounds();
+      const trayBounds = this.tray.getBounds();
+      const x = Math.round(trayBounds.x + (trayBounds.width / 2) - (windowBounds.width / 2));
+      const y = Math.round(trayBounds.y + trayBounds.height);
+      this.window.setPosition(x, y, false);
+    }
+    else {
+      this.window.setMenu(null);
+    }
     this.window.show();
   }
 

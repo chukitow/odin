@@ -30,7 +30,7 @@ const PreviewWindow : React.FC = () => {
     try {
       const { filePath } = await remote.dialog.showSaveDialog({
         buttonLabel: 'Save',
-        defaultPath: `Screen-Recording-${Date.now()}.${format}`
+        defaultPath: `Screen-Recording-${Date.now()}.${format}`,
       });
 
 
@@ -53,7 +53,10 @@ const PreviewWindow : React.FC = () => {
   return (
     <div className="preview-window">
       <div className="video-container">
-        <video src={'/Users/chukitow/Desktop/Screen-Recording-1589991796743.mp4'} controls autoPlay/>
+        {
+          src &&
+          <video src={src} controls autoPlay/>
+        }
       </div>
       <div className="tool-bar">
         {

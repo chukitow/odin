@@ -10,17 +10,47 @@ let tray: Tray;
 let mainWindow : MainWindow;
 let cameraWindow : CameraWindow;
 let previewWindow : PreviewWindow;
+const lockSingleInstance = app.requestSingleInstanceLock();
 
-app.on('ready', createWindow);
+if (!lockSingleInstance) {
+  app.quit();
+}
+else {
+  app.on('second-instance', () => {
+    log.info('Second Intance');
+    if (mainWindow) {
+      mainWindow.window.restore();
+      mainWindow.window.focus();
+      mainWindow.show();
+      mainWindow.window.webContents.send('DISPLAY_WINDOW');
+    }
+  });
 
-if(process.platform === 'darwin') {
-  app.dock.hide();
+  app.on('ready', createWindow);
+  app.on('before-quit', function () {
+    application.isQuiting = true;
+  });
+
+  app.on('window-all-closed', () => {
+    if (process.platform !== 'darwin') {
+      app.quit();
+    }
+  });
+
+  if(process.platform === 'darwin') {
+    app.dock.hide();
+  }
 }
 
 function createWindow() : void {
   log.info('Create Tray Window');
   tray = new Tray(nativeImage.createFromPath(path.join(__dirname, 'assets', 'icons', 'tray.png')));
   mainWindow = new MainWindow(tray);
+  mainWindow.window.on('close', () => {
+    closeCamera();
+  })
+  mainWindow.show();
+
   tray.on('right-click', () => {
     const menu = [
       {
@@ -45,16 +75,24 @@ function createWindow() : void {
     }
     else {
       log.info('Display window');
-      mainWindow.window.webContents.send('DISPLAY_WINDOW');
-      mainWindow.show();
+      if(mainWindow.window.isVisible()) {
+        mainWindow.window.hide();
+        closeCamera();
+      }
+      else {
+        mainWindow.window.webContents.send('DISPLAY_WINDOW');
+        mainWindow.show();
+      }
     }
   });
 
   mainWindow.window.on('blur', () => {
-    log.info('Blur main window');
-    mainWindow.window.hide();
-    if(!application.isRecording) {
-      closeCamera();
+    if(process.platform == 'darwin') {
+      log.info('Blur main window');
+      mainWindow.window.hide();
+      if(!application.isRecording) {
+        closeCamera();
+      }
     }
   });
 }

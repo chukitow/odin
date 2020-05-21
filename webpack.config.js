@@ -3,17 +3,16 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
+const mode = process.env.NODE_ENV || 'development';
+
 module.exports = [
   {
-    mode: 'development',
+    mode,
     entry: {
       electron: path.resolve('./src/electron.ts'),
     },
     target: 'electron-main',
-    node: {
-      __filename: false,
-      __dirname: false,
-    },
+    node: false,
     module: {
       rules: [
         {
@@ -40,7 +39,7 @@ module.exports = [
     ]
   },
   {
-    mode: 'development',
+    mode,
     entry: {
       index: path.resolve('./src/index.tsx'),
     },
@@ -86,7 +85,7 @@ module.exports = [
       }
     },
     output: {
-      path: __dirname + '/build',
+      path: path.resolve(__dirname, 'build'),
       filename: '[name].js'
     },
     plugins: [

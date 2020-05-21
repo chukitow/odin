@@ -1,6 +1,15 @@
 .camera-window {
-  width: 100%;
-  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background-color: #29292B;
+
+  svg {
+    color: #FFF;
+  }
 
   video {
     width: 200px;
@@ -8,6 +17,6 @@
     border-radius: 50%;
     object-fit: cover;
     -webkit-app-region: drag;
-    background-color: #29292B;
+    transform: rotateY(180deg);
   }
 }

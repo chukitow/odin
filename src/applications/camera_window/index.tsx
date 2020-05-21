@@ -1,8 +1,10 @@
-import React, { useRef, useEffect } from 'react';
-import './styles.scss';
+import React, { useRef, useEffect, useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import querystring from 'querystring';
+import './styles.scss';
 
 const CameraWindow : React.FC = () => {
+  const [loading, setLoading] = useState<boolean>(true);
   const params = querystring.parse(window.location.search.slice(1));
   const video = useRef(null);
 
@@ -17,15 +19,25 @@ const CameraWindow : React.FC = () => {
     }
 
     navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
+      setLoading(false);
       video.current.srcObject = stream;
       video.current.play();
     });
 
-  }, []);
+  }, [
+    setLoading
+  ]);
 
   return (
     <div className="camera-window">
-      <video ref={video}></video>
+      {
+        loading &&
+        <FontAwesomeIcon icon="spinner" size="3x" spin/>
+      }
+      {
+        !loading &&
+        <video ref={video}></video>
+      }
     </div>
   );
 }

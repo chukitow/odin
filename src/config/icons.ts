@@ -3,11 +3,14 @@ import {
   faDesktop,
   faUserCircle,
   faMicrophone,
-  faCamera
-} from '@fortawesome/free-solid-svg-icons'
+  faCamera,
+  faSpinner
+} from '@fortawesome/free-solid-svg-icons';
+
 library.add(
   faDesktop,
   faUserCircle,
   faMicrophone,
   faCamera,
+  faSpinner,
 );

@@ -40,7 +40,7 @@ class CameraWindow {
   show() {
     let display = screen.getPrimaryDisplay();
     let height = display.bounds.height;
-    this.window.setPosition(0, height - 200, false);
+    this.window.setPosition(40, height - 240, false);
     this.window.showInactive();
   }
 }
