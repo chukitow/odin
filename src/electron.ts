@@ -27,6 +27,7 @@ ipcMain.on('DISPLAY_CAMERA', displayCamera);
 ipcMain.on('CLOSE_CAMERA', closeCamera);
 ipcMain.on('START_RECORDING', startRecording);
 ipcMain.on('STOP_RECORDING', stopRecording);
+ipcMain.on('ERROR_RECORDING', errorRecording);
 ipcMain.on('DISPLAY_PREVIEW', displayPreview);
 ipcMain.on('EXPORT', (_, data) => {
   convert(data, previewWindow);
@@ -152,13 +153,20 @@ function startRecording() {
   toolsWindow.window.webContents.send('START_RECORDING');
 }
 
+const STOP_RECORDING = 'STOP_RECORDING';
+
 function stopRecording() {
   log.info('Stop recording');
-  const STOP_RECORDING = 'STOP_RECORDING';
   mainWindow.window.webContents.send(STOP_RECORDING);
   toolsWindow.window.webContents.send(STOP_RECORDING);
   toolsWindow.window.hide();
   application.isRecording = false;
+}
+
+function errorRecording() {
+  log.info('Error recording');
+  application.isRecording = false;
+  toolsWindow.window.webContents.send('STOP_RECORDING');
 }
 
 function displayCamera(_ : Electron.Event, data: { deviceId: string }) {

@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { desktopCapturer, ipcRenderer } from 'electron';
+import { desktopCapturer, ipcRenderer, remote } from 'electron';
 import { writeFile } from 'fs';
 import log from 'electron-log';
 import tempy from 'tempy';
@@ -12,7 +12,9 @@ const useRecorder = (microphone: string) => {
   const startRecording = async () => {
     try {
       const sources = await desktopCapturer.getSources({ types: ['screen'] });
-      const screen = sources.find(source => source.name === 'Entire Screen');
+      const cursor = remote.screen.getCursorScreenPoint();
+      const activeDisplay = remote.screen.getDisplayNearestPoint({x: cursor.x, y: cursor.y});
+      const screen = sources.find(source => source.id.includes(String(activeDisplay.id)));
       const audioOptions = microphone === 'none' ? { audio: false } : { audio: { deviceId: { exact: microphone } } };
       const constrains : any = {
         audio: false,
@@ -59,6 +61,7 @@ const useRecorder = (microphone: string) => {
       }
     }
     catch(e) {
+      ipcRenderer.send('ERROR_RECORDING');
       alert('There was an error proccesing the recording');
       log.warn(e);
     }
