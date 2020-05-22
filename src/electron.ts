@@ -78,6 +78,8 @@ function createWindow() : void {
     if(application.isRecording) {
       log.info('Stop recording');
       mainWindow.window.webContents.send('STOP_RECORDING');
+      toolsWindow.window.webContents.send('STOP_RECORDING');
+      toolsWindow.window.hide();
       application.isRecording = false;
     }
     else {

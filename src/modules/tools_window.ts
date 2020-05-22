@@ -23,6 +23,7 @@ class ToolsWindow {
     });
 
     this.window.loadURL(`file://${path.join(__dirname, 'index.html')}?screen=tools`);
+    this.window.setVisibleOnAllWorkspaces(true);
   }
 
   show() {
