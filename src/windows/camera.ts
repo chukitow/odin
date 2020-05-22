@@ -6,7 +6,7 @@ interface Params {
   deviceId: string,
 }
 
-class CameraWindow {
+class Camera {
   public window: BrowserWindow;
   constructor(params: Params) {
     this.window = new BrowserWindow({
@@ -45,4 +45,4 @@ class CameraWindow {
   }
 }
 
-export default CameraWindow;
+export default Camera;

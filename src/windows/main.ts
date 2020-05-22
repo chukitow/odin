@@ -2,7 +2,7 @@ import path from 'path';
 import { BrowserWindow, Tray } from 'electron';
 import application from './application';
 
-class MainWindow {
+class Main {
   public window: BrowserWindow;
   public tray: Tray;
   constructor(tray: Tray) {
@@ -53,4 +53,4 @@ class MainWindow {
   }
 }
 
-export default MainWindow;
+export default Main;

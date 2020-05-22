@@ -1,10 +1,10 @@
 import { app, Tray, Menu, ipcMain, nativeImage } from 'electron';
 import log from 'electron-log';
-import MainWindow from '@app/modules/main_window';
-import CameraWindow from '@app/modules/camera_window';
-import PreviewWindow from '@app/modules/preview_window';
-import ToolsWindow from '@app/modules/tools_window';
-import application from '@app/modules/application';
+import MainWindow from '@app/windows/main';
+import CameraWindow from '@app/windows/camera';
+import PreviewWindow from '@app/windows/preview';
+import ToolsWindow from '@app/windows/tools';
+import application from '@app/windows/application';
 import { convert } from '@app/utils/converter';
 import path from 'path';
 let tray: Tray;

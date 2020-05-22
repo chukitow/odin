@@ -2,7 +2,7 @@ import os from 'os';
 import path from 'path';
 import fs from 'fs'
 import { Notification } from 'electron';
-import PreviewWindow from '../modules/preview_window';
+import PreviewWindow from '../windows/preview';
 import ffmpeg from 'fluent-ffmpeg';
 import log from 'electron-log';
 

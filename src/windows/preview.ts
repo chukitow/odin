@@ -1,7 +1,7 @@
 import path from 'path';
 import { BrowserWindow } from 'electron';
 
-class PreviewWindow {
+class Preview {
   public window: BrowserWindow;
   constructor() {
     this.window = new BrowserWindow({
@@ -31,4 +31,4 @@ class PreviewWindow {
   }
 }
 
-export default PreviewWindow;
+export default Preview;
