@@ -7,8 +7,8 @@
 # Odin
 An open-source screen recorder built with web technology. You Can still communicate effectively with staff and coworkers while working from home
 
-  <img src="https://github.com/chukitow/odin/blob/master/static/screenshot.png?raw=true">
-  <img src="https://github.com/chukitow/odin/blob/master/static/screenrecording.gif?raw=true">
+  <img src="https://github.com/chukitow/odin/blob/master/static/assets/images/screenshot.png?raw=true">
+  <img src="https://github.com/chukitow/odin/blob/master/static/assets/images/screenrecording.gif?raw=true">
 
 ## Contribute
 
