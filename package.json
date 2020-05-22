@@ -1,7 +1,7 @@
 {
   "name": "Odin",
   "version": "0.1.0",
-  "description": "Open-source Screen recording utility",
+  "description": "An open-source screen recorder built with web technology",
   "main": "index.js",
   "author": "Ivan Velasquez <ivan.velasquez.rios@gmail.com>",
   "license": "MIT",
