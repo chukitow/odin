@@ -3,7 +3,7 @@ import { ipcRenderer, remote } from 'electron';
 import log from 'electron-log';
 import './styles.scss';
 
-const PreviewWindow : React.FC = () => {
+const Preview : React.FC = () => {
   const [src, setSrc] = useState<string>();
   const [format, setFormat] = useState<string>('mp4');
   const [converting, setConverting] = useState<boolean>(false);
@@ -86,4 +86,4 @@ const PreviewWindow : React.FC = () => {
   )
 }
 
-export default PreviewWindow;
+export default Preview;

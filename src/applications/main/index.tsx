@@ -10,7 +10,7 @@ import './styles.scss';
 const SCREEN_CAM = 'SCREEN_CAM';
 const SCREEN = 'SCREEN';
 
-const MainWindow : React.FC = () => {
+const Main : React.FC = () => {
   const [mode, setMode] = useState<string>(SCREEN_CAM);
   const [camera, setCamera] = useState<string>('');
   const [microphone, setMicrophone] = useState<string>('');
@@ -168,4 +168,4 @@ const MainWindow : React.FC = () => {
   )
 }
 
-export default MainWindow;
+export default Main;

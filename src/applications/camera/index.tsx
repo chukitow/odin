@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import querystring from 'querystring';
 import './styles.scss';
 
-const CameraWindow : React.FC = () => {
+const Camera : React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const params = querystring.parse(window.location.search.slice(1));
   const video = useRef(null);
@@ -42,4 +42,4 @@ const CameraWindow : React.FC = () => {
   );
 }
 
-export default CameraWindow;
+export default Camera;

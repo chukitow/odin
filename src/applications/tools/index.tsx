@@ -3,7 +3,7 @@ import { ipcRenderer } from 'electron';
 import cx from 'classnames';
 import './styles.scss';
 
-const ToolsWindow : React.FC = () => {
+const Tools : React.FC = () => {
   const [recording, setRecording] = useState<boolean>(false);
 
   const stopRecording = () => {
@@ -36,4 +36,4 @@ const ToolsWindow : React.FC = () => {
   );
 };
 
-export default ToolsWindow;
+export default Tools;
