@@ -3,6 +3,7 @@ import log from 'electron-log';
 import MainWindow from '@app/modules/main_window';
 import CameraWindow from '@app/modules/camera_window';
 import PreviewWindow from '@app/modules/preview_window';
+import ToolsWindow from '@app/modules/tools_window';
 import application from '@app/modules/application';
 import { convert } from '@app/utils/converter';
 import path from 'path';
@@ -10,6 +11,7 @@ let tray: Tray;
 let mainWindow : MainWindow;
 let cameraWindow : CameraWindow;
 let previewWindow : PreviewWindow;
+let toolsWindow : ToolsWindow;
 const lockSingleInstance = app.requestSingleInstanceLock();
 
 if (!lockSingleInstance) {
@@ -22,6 +24,7 @@ else {
       mainWindow.window.restore();
       mainWindow.window.focus();
       mainWindow.show();
+      toolsWindow.show();
       mainWindow.window.webContents.send('DISPLAY_WINDOW');
     }
   });
@@ -48,8 +51,12 @@ function createWindow() : void {
   mainWindow = new MainWindow(tray);
   mainWindow.window.on('close', () => {
     closeCamera();
+    closeTools();
   })
   mainWindow.show();
+  toolsWindow = new ToolsWindow();
+  toolsWindow.window.on('close', () => toolsWindow = null);
+  toolsWindow.show();
 
   tray.on('right-click', () => {
     const menu = [
@@ -78,10 +85,14 @@ function createWindow() : void {
       if(mainWindow.window.isVisible()) {
         mainWindow.window.hide();
         closeCamera();
+        closeTools();
       }
       else {
         mainWindow.window.webContents.send('DISPLAY_WINDOW');
         mainWindow.show();
+        toolsWindow = new ToolsWindow();
+        toolsWindow.window.on('close', () => toolsWindow = null);
+        toolsWindow.show();
       }
     }
   });
@@ -91,6 +102,7 @@ function createWindow() : void {
       log.info('Blur main window');
       mainWindow.window.hide();
       if(!application.isRecording) {
+        toolsWindow.window.hide();
         closeCamera();
       }
     }
@@ -104,6 +116,7 @@ ipcMain.on('DISPLAY_CAMERA', (_, data) => {
   }
 
   cameraWindow = new CameraWindow(data);
+  cameraWindow.window.on('close', () => cameraWindow = null);
 });
 
 ipcMain.on('CLOSE_CAMERA', () => {
@@ -113,6 +126,16 @@ ipcMain.on('CLOSE_CAMERA', () => {
 ipcMain.on('START_RECORDING', () => {
   log.info('Start recording');
   application.isRecording = true;
+  toolsWindow.show();
+  toolsWindow.window.webContents.send('START_RECORDING');
+});
+
+ipcMain.on('STOP_RECORDING', () => {
+  log.info('Stop recording');
+  mainWindow.window.webContents.send('STOP_RECORDING');
+  toolsWindow.window.webContents.send('STOP_RECORDING');
+  toolsWindow.window.hide();
+  application.isRecording = false;
 });
 
 ipcMain.on('DISPLAY_PREVIEW', (_, data) => {
@@ -138,6 +161,11 @@ function closeCamera() {
   log.info('Closing camera');
   if(cameraWindow) {
     cameraWindow.close();
-    cameraWindow = null;
+  }
+}
+
+function closeTools() {
+  if(toolsWindow) {
+    toolsWindow.window.close();
   }
 }

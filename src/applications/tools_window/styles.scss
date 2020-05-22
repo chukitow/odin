@@ -1,0 +1,29 @@
+.tools-view {
+  .stop {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    background-color: #292A2C;
+    &:hover {
+      cursor: pointer;
+    }
+
+    .stop-button {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 20px;
+      height: 20px;
+      color: #FFF;
+      font-size: 14px;
+      border-radius: 4px;
+      background-color: #7E7E80;
+
+      &.recording {
+        background-color: #F14668;
+      }
+    }
+  }
+}

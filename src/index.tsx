@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 import MainWindow from '@app/applications/main_window';
 import CameraWindow  from '@app/applications/camera_window';
 import PreviewWindow from '@app/applications/preview_window';
+import ToolsWindow from '@app/applications/tools_window';
 import 'bulma/css/bulma.css'
 import '@app/assets/styles/main.scss';
 import querystring from 'querystring';
@@ -17,6 +18,9 @@ switch(params.screen) {
     break;
   case 'preview':
     RootComponet = PreviewWindow;
+    break;
+  case 'tools':
+    RootComponet = ToolsWindow;
     break;
   default:
     RootComponet = MainWindow;
