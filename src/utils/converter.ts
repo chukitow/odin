@@ -3,7 +3,7 @@ import path from 'path';
 import fs from 'fs'
 import { Notification } from 'electron';
 import PreviewWindow from '../windows/preview';
-import ffmpeg from 'fluent-ffmpeg';
+import ffmpeg, { FfmpegCommand } from 'fluent-ffmpeg';
 import log from 'electron-log';
 
 const ffmpegPath = () => {
@@ -27,10 +27,14 @@ fs.chmod(ffmpegPath(), '777', () => {
   ffmpeg.setFfmpegPath(ffmpegPath());
 });
 
-export const convert = (data: { src: string, filePath: string }, render: PreviewWindow) => {
+export const convert = (data: { src: string, filePath: string, format: string }, render: PreviewWindow) => {
   log.info('Convert file', data);
   log.info(ffmpegPath());
-  ffmpeg(data.src)
+  let transcoder = ffmpeg(data.src)
+  if(data.format === 'mp4') {
+    transcoder = MP4Converter(transcoder);
+  }
+  transcoder
   .output(data.filePath)
   .on('end', () => {
     const notification = new Notification();
@@ -43,4 +47,11 @@ export const convert = (data: { src: string, filePath: string }, render: Preview
     render.window.webContents.send('conversion:end')
   })
   .run();
+}
+
+function MP4Converter (transcoder : FfmpegCommand) : FfmpegCommand {
+  return transcoder.outputOptions([
+    '-crf 1',
+    '-c:v libx264'
+  ]);
 }
