@@ -23,5 +23,5 @@
     "public"
   ],
   "compileOnSave": false,
-  "include": ["src/*"]
+  "include": ["src/*", "src/@types/index.d.ts"]
 }

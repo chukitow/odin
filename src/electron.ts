@@ -3,12 +3,14 @@ import { autoUpdater } from'electron-updater';
 import log from 'electron-log';
 import application from '@app/windows/application';
 import { convert } from '@app/utils/converter';
+import { displayQuickStart, store } from '@app/utils/store';
 import path from 'path';
 
 import MainWindow from '@app/windows/main';
 import CameraWindow from '@app/windows/camera';
 import PreviewWindow from '@app/windows/preview';
 import ToolsWindow from '@app/windows/tools';
+import QuickStartWindow from '@app/windows/quick_start';
 
 autoUpdater.logger = log;
 
@@ -17,9 +19,10 @@ let mainWindow : MainWindow;
 let cameraWindow : CameraWindow;
 let previewWindow : PreviewWindow;
 let toolsWindow : ToolsWindow;
+let quickStart : QuickStartWindow;
 const lockSingleInstance = app.requestSingleInstanceLock();
 
-autoUpdater.checkForUpdates();
+autoUpdater.checkForUpdates().catch((err) => log.warn(err.message));
 
 autoUpdater.on('checking-for-update', () => {
   log.info('Checking for update...');
@@ -90,7 +93,12 @@ ipcMain.on('ERROR_RECORDING', errorRecording);
 ipcMain.on('DISPLAY_PREVIEW', displayPreview);
 ipcMain.on('EXPORT', (_, data) => {
   convert(data, previewWindow);
-})
+});
+ipcMain.on('FINISH_QUICK_START', () => {
+  store.set('quick_start', true);
+  quickStart.close();
+  createWindow();
+});
 
 function initApplicationBindings() {
   app.on('ready', createWindow);
@@ -121,9 +129,14 @@ function initApplicationBindings() {
 }
 
 function createWindow() : void {
-  createTray();
-  createMainWindow();
-  createToolsWindow();
+  if(displayQuickStart()) {
+    createQuickStart();
+  }
+  else {
+    createTray();
+    createMainWindow();
+    createToolsWindow();
+  }
 }
 
 function createTray() {
@@ -162,6 +175,12 @@ function createTray() {
       }
     }
   });
+}
+
+function createQuickStart() {
+  quickStart = new QuickStartWindow();
+  quickStart.window.on('close', () => quickStart = null);
+  quickStart.show();
 }
 
 function createMainWindow() {

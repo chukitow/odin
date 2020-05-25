@@ -5,6 +5,7 @@ import Main from '@app/applications/main';
 import Camera  from '@app/applications/camera';
 import Preview from '@app/applications/preview';
 import Tools from '@app/applications/tools';
+import QuickStart from '@app/applications/quick_start';
 import 'bulma/css/bulma.css'
 import '@app/assets/styles/main.scss';
 import querystring from 'querystring';
@@ -21,6 +22,9 @@ switch(params.screen) {
     break;
   case 'tools':
     RootComponet = Tools;
+    break;
+  case 'quick_start':
+    RootComponet = QuickStart;
     break;
   default:
     RootComponet = Main;

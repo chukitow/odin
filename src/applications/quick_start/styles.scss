@@ -1,0 +1,50 @@
+.quick-start {
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  width: 100vw;
+  height: 100vh;
+  background-image: url("../../assets/images/banner-bg.svg");
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 200px;
+  flex-direction: column;
+
+  .action-button {
+    position: absolute;
+    bottom: 100px;
+  }
+
+  & > div {
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .title {
+    font-size: 38px;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .subtitle {
+    font-size: 34px;
+    font-weight: 300;
+    color: #fff;
+  }
+
+  .content {
+    font-size: 20px;
+    font-weight: 300;
+    color: #fff;
+  }
+
+  .features-step {
+    padding-top: 20px;
+    img {
+      margin-bottom: 20px;
+    }
+  }
+}

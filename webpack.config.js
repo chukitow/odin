@@ -75,6 +75,21 @@ module.exports = [
           }, {
             loader: 'sass-loader'
           }]
+        },
+        {
+          test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
+          issuer: {
+            test: /\.jsx?$/
+          },
+          use: ['babel-loader', '@svgr/webpack', 'url-loader']
+        },
+        {
+          test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
+          loader: 'url-loader'
+        },
+        {
+          test: /\.(jpe?g|png|gif)$/i,
+          loader: 'url-loader'
         }
       ]
     },
