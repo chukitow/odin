@@ -7,36 +7,53 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import cx from 'classnames';
 import './styles.scss';
 
-const SCREEN_CAM = 'SCREEN_CAM';
-const SCREEN = 'SCREEN';
+export const SCREEN_CAM = 'SCREEN_CAM';
+export const SCREEN = 'SCREEN';
+export const CAM = 'CAM';
 
 const Main : React.FC = () => {
   const [mode, setMode] = useState<string>(SCREEN_CAM);
   const [camera, setCamera] = useState<string>('');
   const [microphone, setMicrophone] = useState<string>('');
   const [devices] = useMediaDevices();
-  const [startRecording, stopRecording] = useRecorder(microphone);
+  const [startRecording, stopRecording] = useRecorder({ microphone, camera, mode });
   const cameras = devices.filter(device => device.kind === 'videoinput');
   const microphones = devices.filter(device => device.kind === 'audioinput');
 
-  useEffect(() => {
-    if(isEmpty(cameras) || camera === 'none') {
-      setMode(SCREEN);
-    }
-    else if(camera === ''){
+  const setScreenCam = () => {
+    if(!isEmpty(cameras)) {
       setCamera(head(cameras).deviceId);
       setMode(SCREEN_CAM);
     }
-    else if(camera == 'none' || camera == '') {
+  }
+
+  const setScreenOnly = () => {
+    setCamera('none');
+    setMode(SCREEN);
+  }
+
+  const setCam = () => {
+    if(!isEmpty(cameras)) {
+      setCamera(head(cameras).deviceId);
+      setMode(CAM);
+    }
+  }
+
+  useEffect(() => {
+    if(!isEmpty(cameras) && camera == '') {
+      setCamera(head(cameras).deviceId);
+    }
+    else if(camera === 'none' && [SCREEN_CAM, CAM].includes(mode)) {
       setMode(SCREEN);
     }
-    else {
+    else if(camera !== 'none' && mode === SCREEN) {
       setMode(SCREEN_CAM);
     }
   }, [
     cameras,
     camera,
-    setMode
+    setCamera,
+    mode
   ]);
 
   useEffect(() => {
@@ -82,11 +99,7 @@ const Main : React.FC = () => {
     <div className="main-window">
       <div className="mode-selector">
         <div
-          onClick={() => {
-            if(!isEmpty(cameras)) {
-              setCamera(head(cameras).deviceId);
-            }
-          }}
+          onClick={setScreenCam}
           className={cx('mode', { active: mode == SCREEN_CAM })}>
           <div>
             <FontAwesomeIcon icon="desktop" />
@@ -95,14 +108,20 @@ const Main : React.FC = () => {
           Screen + Cam
         </div>
         <div
-          onClick={() => {
-            setCamera('none');
-          }}
+          onClick={setScreenOnly}
           className={cx('mode', { active: mode == SCREEN })}>
           <div>
             <FontAwesomeIcon icon="desktop" />
           </div>
           Screen Only
+        </div>
+        <div
+          onClick={setCam}
+          className={cx('mode', { active: mode == CAM })}>
+          <div>
+            <FontAwesomeIcon icon="user-circle" />
+          </div>
+          Cam Only
         </div>
       </div>
 

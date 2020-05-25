@@ -1,11 +1,18 @@
 import { useRef } from 'react';
+import { CAM } from '@app/applications/main';
 import { desktopCapturer, ipcRenderer, remote } from 'electron';
 import { writeFile } from 'fs';
 import log from 'electron-log';
 import tempy from 'tempy';
 import path from 'path';
 
-const useRecorder = (microphone: string) => {
+interface DeviceSelcted {
+  microphone: string,
+  camera: string,
+  mode: string,
+};
+
+const useRecorder = (props: DeviceSelcted) => {
   const mediaRecorder = useRef(null);
   let recorderdChunks = [];
 
@@ -15,14 +22,12 @@ const useRecorder = (microphone: string) => {
       const cursor = remote.screen.getCursorScreenPoint();
       const activeDisplay = remote.screen.getDisplayNearestPoint({x: cursor.x, y: cursor.y});
       const screen = sources.find(source => String(source.display_id) == String(activeDisplay.id));
-      const audioOptions = microphone === 'none' ? { audio: false } : { audio: { deviceId: { exact: microphone } } };
+      const audioOptions = props.microphone === 'none' ? { audio: false } : { audio: { deviceId: { exact: props.microphone } } };
+
       const constrains : any = {
         audio: false,
         video: {
-          mandatory: {
-            chromeMediaSource: 'desktop',
-            chromeMediaSourceId: screen.id,
-          }
+          ...videoOptions({ ...props, screen_id: screen.id}),
         }
       };
 
@@ -48,6 +53,9 @@ const useRecorder = (microphone: string) => {
 
         recorderdChunks = [];
         mediaRecorder.current = null;
+        videoStream.getTracks().forEach(track => {
+          track.stop();
+        });
 
         const buffer = Buffer.from(await blob.arrayBuffer());
         const filePath = path.join(tempy.directory(), `Screen-Recording-${Date.now()}.webm`);
@@ -74,5 +82,31 @@ const useRecorder = (microphone: string) => {
 
   return [startRecording, stopRecording] as const;
 }
+
+interface VideoSelection {
+  mode: string,
+  camera: string,
+  screen_id: string
+};
+
+function videoOptions({ camera, mode, screen_id } : VideoSelection) {
+  if(mode == CAM) {
+    //TODO: Get camera with the best resolution
+    return {
+      deviceId: {
+        exact: camera
+      },
+    };
+  }
+  else {
+    return {
+      mandatory: {
+        chromeMediaSource: 'desktop',
+        chromeMediaSourceId: screen_id
+      }
+    };
+  }
+}
+
 
 export default useRecorder;
