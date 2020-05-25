@@ -1,16 +1,25 @@
 {
   "name": "Odin",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "An open-source screen recorder built with web technology",
   "main": "index.js",
   "author": "Ivan Velasquez <ivan.velasquez.rios@gmail.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chukitow/odin.git"
+  },
+  "homepage": "https://chukitow.github.io/odin",
+  "bugs": {
+    "url": "https://github.com/chukitow/odin/issues"
+  },
   "scripts": {
     "build": "./node_modules/webpack/bin/webpack.js --config ./webpack.config.js",
     "start": "npm run build && electron --enable-transparent-visuals --disable-gpu ./build/electron.js",
     "postinstall": "electron-builder install-app-deps",
     "package:mac": "yarn build && electron-builder -c.extraMetadata.main=build/electron.js --mac --publish=never",
-    "package:win": "yarn build && electron-builder -c.extraMetadata.main=build/electron.js --win --publish=never"
+    "package:win": "yarn build && electron-builder -c.extraMetadata.main=build/electron.js --win --publish=never",
+    "release": "yarn build && electron-builder -c.extraMetadata.main=build/electron.js --mac --win --publish=always"
   },
   "devDependencies": {
     "@types/classnames": "^2.2.10",
@@ -25,6 +34,7 @@
     "dotenv": "^8.2.0",
     "electron": "^8.3.0",
     "electron-builder": "^22.6.1",
+    "electron-updater": "^4.3.1",
     "html-webpack-plugin": "^4.3.0",
     "postcss-loader": "^3.0.0",
     "precss": "^4.0.0",

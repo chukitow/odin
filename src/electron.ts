@@ -1,4 +1,5 @@
-import { app, Tray, Menu, ipcMain, nativeImage } from 'electron';
+import { app, Tray, Menu, ipcMain, nativeImage, Notification, BrowserWindow} from 'electron';
+import { autoUpdater } from'electron-updater';
 import log from 'electron-log';
 import application from '@app/windows/application';
 import { convert } from '@app/utils/converter';
@@ -9,12 +10,70 @@ import CameraWindow from '@app/windows/camera';
 import PreviewWindow from '@app/windows/preview';
 import ToolsWindow from '@app/windows/tools';
 
+autoUpdater.logger = log;
+
 let tray : Tray;
 let mainWindow : MainWindow;
 let cameraWindow : CameraWindow;
 let previewWindow : PreviewWindow;
 let toolsWindow : ToolsWindow;
 const lockSingleInstance = app.requestSingleInstanceLock();
+
+autoUpdater.checkForUpdates();
+
+autoUpdater.on('checking-for-update', () => {
+  log.info('Checking for update...');
+});
+
+autoUpdater.on('update-available', (_info) => {
+  application.isDownloading = true;
+  log.info('Update available.');
+});
+
+autoUpdater.on('update-not-available', (_info) => {
+  log.info('Update not available.');
+});
+
+autoUpdater.on('error', (err) => {
+  application.isDownloading = false;
+  log.info('Error in auto-updater. ' + err);
+});
+
+autoUpdater.on('download-progress', (progressObj) => {
+  let log_message = 'Download speed: ' + progressObj.bytesPerSecond;
+  log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
+  log_message = log_message + ' (' + progressObj.transferred + '/' + progressObj.total + ')';
+  log.info(log_message);
+});
+
+autoUpdater.on('update-downloaded', (_info) => {
+  application.isDownloading = false;
+  log.info('Update downloaded');
+  const notification = new Notification({
+    title: '',
+    body: 'New version available',
+    actions: [
+      { type: 'button', text: 'Update' },
+    ]
+  });
+
+  notification.on('action', (_, index) => {
+    log.info('action clicked', index);
+    setImmediate(() => {
+      log.info('quit and install update');
+      application.isDownloading = true;
+      app.removeAllListeners('window-all-closed');
+      const browserWindows = BrowserWindow.getAllWindows();
+      browserWindows.forEach(function(browserWindow : any) {
+        browserWindow.removeAllListeners('close');
+      });
+      autoUpdater.quitAndInstall();
+    });
+  });
+
+  notification.show();
+});
+
 
 if (!lockSingleInstance) {
   app.quit();
