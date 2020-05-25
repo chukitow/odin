@@ -47,6 +47,7 @@ const useRecorder = (microphone: string) => {
         })
 
         recorderdChunks = [];
+        mediaRecorder.current = null;
 
         const buffer = Buffer.from(await blob.arrayBuffer());
         const filePath = path.join(tempy.directory(), `Screen-Recording-${Date.now()}.webm`);

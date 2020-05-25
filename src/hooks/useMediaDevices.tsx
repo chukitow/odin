@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import log from 'electron-log';
 
 interface Device {
   deviceId: string,
@@ -10,7 +11,7 @@ interface Device {
 const useMediaDevices = () => {
   const [devices, setDevices] = useState<Device[]>([]);
 
-  useEffect(() => {
+  const refreshDevices = () => {
     navigator.mediaDevices.enumerateDevices()
     .then(function(devices) {
       setDevices(devices.map(device => ({
@@ -20,8 +21,21 @@ const useMediaDevices = () => {
         label: device.label,
       })))
     })
-    .catch(function() {
+    .catch(err => {
+      log.warn(err.message);
     })
+  }
+
+  useEffect(() => {
+    refreshDevices();
+  }, [])
+
+  useEffect(() => {
+    navigator.mediaDevices.addEventListener('devicechange', refreshDevices);
+
+    return () => {
+      navigator.mediaDevices.removeEventListener('devicechange', refreshDevices);
+    }
   }, [])
 
   return [devices];
