@@ -20,6 +20,8 @@ class QuickStart {
     });
 
     this.window.loadURL(`file://${path.join(__dirname, 'index.html')}?screen=quick_start`);
+    this.window.setAlwaysOnTop(true, 'floating');
+    this.window.setVisibleOnAllWorkspaces(true);
   }
 
   show() {

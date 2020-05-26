@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { desktopCapturer } from 'electron';
+import { desktopCapturer, remote } from 'electron';
 import { head } from 'lodash';
 import accesibilityImage from '@app/assets/images/accesibility.gif';
 import log from 'electron-log';
@@ -13,6 +13,7 @@ const Accesibility: React.FC<Props> = ({
 }) => {
   const askPermissions = async () => {
     try {
+      remote.getCurrentWindow().setAlwaysOnTop(false);
       const sources = await desktopCapturer.getSources({ types: ['screen'] });
       const screen = head(sources);
       const constrains : any = {
@@ -26,6 +27,7 @@ const Accesibility: React.FC<Props> = ({
       };
 
       await window.navigator.mediaDevices.getUserMedia(constrains);
+      remote.getCurrentWindow().setAlwaysOnTop(true, 'floating');
     } catch(err) {
       log.warn(err.message);
     }
@@ -41,7 +43,7 @@ const Accesibility: React.FC<Props> = ({
       <button
         onClick={next}
         className="button is-danger is-medium action-button">
-        Start
+        Relaunch
         </button>
     </div>
   );

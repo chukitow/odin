@@ -96,8 +96,8 @@ ipcMain.on('EXPORT', (_, data) => {
 });
 ipcMain.on('FINISH_QUICK_START', () => {
   store.set('quick_start', true);
-  quickStart.close();
-  createWindow();
+  app.relaunch();
+  app.exit();
 });
 
 function initApplicationBindings() {
@@ -179,7 +179,12 @@ function createTray() {
 
 function createQuickStart() {
   quickStart = new QuickStartWindow();
-  quickStart.window.on('close', () => quickStart = null);
+  quickStart.window.on('close', () => {
+    quickStart = null;
+    application.isQuiting = true;
+    app.quit();
+  });
+
   quickStart.show();
 }
 
