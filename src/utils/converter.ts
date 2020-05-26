@@ -34,6 +34,9 @@ export const convert = (data: { src: string, filePath: string, format: string },
   if(data.format === 'mp4') {
     transcoder = MP4Converter(transcoder);
   }
+  else if(data.format === 'gif') {
+    transcoder = GIFConverter(transcoder);
+  }
   transcoder
   .output(data.filePath)
   .on('end', () => {
@@ -56,7 +59,15 @@ export const convert = (data: { src: string, filePath: string, format: string },
 function MP4Converter (transcoder : FfmpegCommand) : FfmpegCommand {
   return transcoder.outputOptions([
     '-crf 26',
+     '-preset slower',
     '-c:v libx264',
+    `-threads ${Math.max(os.cpus().length - 1, 1)}`,
+  ]);
+}
+
+function GIFConverter (transcoder : FfmpegCommand) : FfmpegCommand {
+  return transcoder.outputOptions([
+    '-vf fps=30',
     `-threads ${Math.max(os.cpus().length - 1, 1)}`,
   ]);
 }

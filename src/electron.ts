@@ -94,7 +94,11 @@ ipcMain.on('STOP_RECORDING', stopRecording);
 ipcMain.on('ERROR_RECORDING', errorRecording);
 ipcMain.on('DISPLAY_PREVIEW', displayPreview);
 ipcMain.on('EXPORT', (_, data) => {
-  convert(data, previewWindow);
+  try {
+    convert(data, previewWindow);
+  } catch(err) {
+    log.warn(err);
+  }
 });
 
 ipcMain.on('FINISH_QUICK_START', () => {
