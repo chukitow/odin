@@ -65,7 +65,7 @@ const Canvas : React.FC = () => {
 
   return (
     <div className="canvas">
-      <canvas id="canvas" ref={canvas} width="100vw" height="100vh"/>
+      <canvas id="canvas" ref={canvas} width="100%" height="100%"/>
       <div className="palette">
         <FontAwesomeIcon icon="paint-brush" />
         {PALETTE.map(palette => (

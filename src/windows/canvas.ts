@@ -4,8 +4,13 @@ import { BrowserWindow, screen } from 'electron';
 class Canvas {
   public window: BrowserWindow;
   constructor() {
-    const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+    const { bounds} = screen.getPrimaryDisplay();
+    const { x, y, width, height } = bounds;
     this.window = new BrowserWindow({
+      x,
+      y,
+      width,
+      height,
       resizable: false,
       skipTaskbar: true,
       maximizable: false,
@@ -14,8 +19,6 @@ class Canvas {
       movable: false,
       show: false,
       enableLargerThanScreen: true,
-      width,
-      height,
       transparent: true,
       focusable: false,
       webPreferences: {
@@ -25,7 +28,7 @@ class Canvas {
 
     this.window.loadURL(`file://${path.join(__dirname, 'index.html')}?screen=canvas`);
     this.window.setVisibleOnAllWorkspaces(true);
-    this.window.setAlwaysOnTop(true, 'screen-saver');
+    this.window.setAlwaysOnTop(true, 'screen-saver',  1);
     this.show();
   }
 
