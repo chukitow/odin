@@ -55,7 +55,8 @@ export const convert = (data: { src: string, filePath: string, format: string },
 
 function MP4Converter (transcoder : FfmpegCommand) : FfmpegCommand {
   return transcoder.outputOptions([
-    '-crf 1',
-    '-c:v libx264'
+    '-crf 26',
+    '-c:v libx264',
+    `-threads ${Math.max(os.cpus().length - 1, 1)}`,
   ]);
 }
