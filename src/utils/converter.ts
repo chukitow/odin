@@ -1,7 +1,7 @@
 import os from 'os';
 import path from 'path';
 import fs from 'fs'
-import { Notification } from 'electron';
+import { Notification, shell } from 'electron';
 import PreviewWindow from '../windows/preview';
 import ffmpeg, { FfmpegCommand } from 'fluent-ffmpeg';
 import log from 'electron-log';
@@ -38,7 +38,11 @@ export const convert = (data: { src: string, filePath: string, format: string },
   .output(data.filePath)
   .on('end', () => {
     const notification = new Notification();
-    notification.body = 'Screen Recording exported';
+    notification.title = 'Screen Recording exported';
+    notification.body = 'Click here to open';
+    notification.on('click', () => {
+      shell.openItem(path.dirname(data.filePath));
+    })
     notification.show();
     render.window.webContents.send('conversion:end')
   })
