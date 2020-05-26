@@ -28,6 +28,32 @@ fs.chmod(ffmpegPath(), '777', () => {
 });
 
 export const convert = (data: { src: string, filePath: string, format: string }, render: PreviewWindow) => {
+
+  const onSuccess = () => {
+    const notification = new Notification();
+    notification.title = 'Screen Recording exported';
+    notification.body = 'Click here to open';
+    notification.on('click', () => {
+      shell.openItem(path.dirname(data.filePath));
+    })
+    notification.show();
+    render.window.webContents.send('conversion:end')
+  }
+
+  const onError = (err: any) => {
+    log.warn('Eror on conversion', err);
+    render.window.webContents.send('conversion:end')
+  }
+
+  if(data.format == 'webm') {
+    return fs.copyFile(data.src, data.filePath, (err) => {
+      if(err) {
+        onError(err);
+      }
+      onSuccess();
+    });
+  }
+
   log.info('Convert file', data);
   log.info(ffmpegPath());
   let transcoder = ffmpeg(data.src)
@@ -40,18 +66,10 @@ export const convert = (data: { src: string, filePath: string, format: string },
   transcoder
   .output(data.filePath)
   .on('end', () => {
-    const notification = new Notification();
-    notification.title = 'Screen Recording exported';
-    notification.body = 'Click here to open';
-    notification.on('click', () => {
-      shell.openItem(path.dirname(data.filePath));
-    })
-    notification.show();
-    render.window.webContents.send('conversion:end')
+    onSuccess();
   })
   .on('error', (err) => {
-    log.warn('Eror on conversion', err);
-    render.window.webContents.send('conversion:end')
+    onError(err);
   })
   .run();
 }

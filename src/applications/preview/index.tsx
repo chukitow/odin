@@ -71,6 +71,7 @@ const Preview : React.FC = () => {
                 onChange={(e) => setFormat(e.target.value) }
                 defaultValue={format}>
                 <option value="mp4">MP4</option>
+                <option value="webm">WEBM</option>
                 <option value="gif">GIF</option>
               </select>
             </div>
