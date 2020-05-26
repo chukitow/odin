@@ -248,6 +248,7 @@ function startRecording() {
   application.isRecording = true;
   toolsWindow.show();
   toolsWindow.window.webContents.send('START_RECORDING');
+  tray.setImage(nativeImage.createFromPath(path.join(__dirname, 'assets', 'icons', 'tray_stop.png')))
 }
 
 const STOP_RECORDING = 'STOP_RECORDING';
@@ -261,6 +262,7 @@ function stopRecording() {
   if(canvas) {
     canvas.window.close();
   }
+  tray.setImage(nativeImage.createFromPath(path.join(__dirname, 'assets', 'icons', 'tray.png')))
 }
 
 function errorRecording() {
