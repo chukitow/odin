@@ -93,7 +93,20 @@ const Main : React.FC = () => {
       stopRecording();
       ipcRenderer.send('CLOSE_CAMERA');
     });
-  }, []);
+
+    ipcRenderer.on('START_RECORDING', () => {
+      startRecording();
+      ipcRenderer.send('START_RECORDING');
+    });
+
+    return () => {
+      ipcRenderer.removeAllListeners('STOP_RECORDING');
+      ipcRenderer.removeAllListeners('START_RECORDING');
+    }
+  }, [
+    microphone,
+    camera
+  ]);
 
   return (
     <div className="main-window">
@@ -175,9 +188,7 @@ const Main : React.FC = () => {
       <div className="recording-actions">
         <button
           onClick={() => {
-            ipcRenderer.send('START_RECORDING');
-            remote.getCurrentWindow().hide();
-            startRecording();
+            ipcRenderer.send('START_COUNTER');
           }}
           className="button is-large is-fullwidth is-danger">
           Start Recording

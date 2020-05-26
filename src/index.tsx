@@ -7,6 +7,7 @@ import Preview from '@app/applications/preview';
 import Tools from '@app/applications/tools';
 import QuickStart from '@app/applications/quick_start';
 import Canvas from '@app/applications/canvas';
+import Counter from '@app/applications/counter';
 import 'bulma/css/bulma.css'
 import '@app/assets/styles/main.scss';
 import querystring from 'querystring';
@@ -29,6 +30,9 @@ switch(params.screen) {
     break;
   case 'canvas':
     RootComponet = Canvas;
+    break;
+  case 'counter':
+    RootComponet = Counter;
     break;
   default:
     RootComponet = Main;

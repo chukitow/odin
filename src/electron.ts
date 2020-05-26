@@ -12,6 +12,7 @@ import PreviewWindow from '@app/windows/preview';
 import ToolsWindow from '@app/windows/tools';
 import QuickStartWindow from '@app/windows/quick_start';
 import CanvasWindow from '@app/windows/canvas';
+import CounterWindow from '@app/windows/counter';
 
 autoUpdater.logger = log;
 
@@ -22,6 +23,7 @@ let previewWindow : PreviewWindow;
 let toolsWindow : ToolsWindow;
 let quickStart : QuickStartWindow;
 let canvas : CanvasWindow;
+let counter : CounterWindow;
 const lockSingleInstance = app.requestSingleInstanceLock();
 
 autoUpdater.checkForUpdates().catch((err) => log.warn(err.message));
@@ -89,6 +91,8 @@ else {
 
 ipcMain.on('DISPLAY_CAMERA', displayCamera);
 ipcMain.on('CLOSE_CAMERA', closeCamera);
+ipcMain.on('START_COUNTER', startCounter);
+ipcMain.on('STOP_COUNTER', stopCounter);
 ipcMain.on('START_RECORDING', startRecording);
 ipcMain.on('STOP_RECORDING', stopRecording);
 ipcMain.on('ERROR_RECORDING', errorRecording);
@@ -106,6 +110,7 @@ ipcMain.on('FINISH_QUICK_START', () => {
   app.relaunch();
   app.exit();
 });
+
 
 ipcMain.on('OPEN_CANVAS', () => {
   toolsWindow.window.hide();
@@ -245,6 +250,21 @@ function closeTools() {
   if(toolsWindow) {
     toolsWindow.window.close();
   }
+}
+
+function startCounter() {
+  counter = new CounterWindow();
+  counter.window.on('close', () => counter = null);
+  counter.show();
+  mainWindow.window.hide();
+}
+
+function stopCounter() {
+  if(counter) {
+    counter.window.close();
+  }
+
+  mainWindow.window.webContents.send('START_RECORDING');
 }
 
 function startRecording() {
