@@ -6,6 +6,7 @@
     width: 40px;
     height: 40px;
     background-color: #292A2C;
+
     &:hover {
       cursor: pointer;
     }
@@ -26,4 +27,21 @@
       }
     }
   }
+
+  .brush {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    background-color: #292A2C;
+    color: #7E7E80;
+    font-size: 22px;
+
+    .recording {
+      color: #FFF;
+    }
+  }
+
 }

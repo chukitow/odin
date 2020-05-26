@@ -11,6 +11,7 @@ import CameraWindow from '@app/windows/camera';
 import PreviewWindow from '@app/windows/preview';
 import ToolsWindow from '@app/windows/tools';
 import QuickStartWindow from '@app/windows/quick_start';
+import CanvasWindow from '@app/windows/canvas';
 
 autoUpdater.logger = log;
 
@@ -20,6 +21,7 @@ let cameraWindow : CameraWindow;
 let previewWindow : PreviewWindow;
 let toolsWindow : ToolsWindow;
 let quickStart : QuickStartWindow;
+let canvas : CanvasWindow;
 const lockSingleInstance = app.requestSingleInstanceLock();
 
 autoUpdater.checkForUpdates().catch((err) => log.warn(err.message));
@@ -94,10 +96,22 @@ ipcMain.on('DISPLAY_PREVIEW', displayPreview);
 ipcMain.on('EXPORT', (_, data) => {
   convert(data, previewWindow);
 });
+
 ipcMain.on('FINISH_QUICK_START', () => {
   store.set('quick_start', true);
   app.relaunch();
   app.exit();
+});
+
+ipcMain.on('OPEN_CANVAS', () => {
+  toolsWindow.window.hide();
+  canvas = new CanvasWindow();
+  canvas.window.on('close', () => canvas = null);
+});
+
+ipcMain.on('CLOSE_CANVAS', () => {
+  toolsWindow.window.show();
+  canvas.window.close();
 });
 
 function initApplicationBindings() {
@@ -244,6 +258,9 @@ function stopRecording() {
   toolsWindow.window.webContents.send(STOP_RECORDING);
   toolsWindow.window.hide();
   application.isRecording = false;
+  if(canvas) {
+    canvas.window.close();
+  }
 }
 
 function errorRecording() {

@@ -1,9 +1,10 @@
 import path from 'path';
 import { BrowserWindow, screen } from 'electron';
 
-class Tools {
+class Canvas {
   public window: BrowserWindow;
   constructor() {
+    const { width, height } = screen.getPrimaryDisplay().workAreaSize;
     this.window = new BrowserWindow({
       resizable: false,
       skipTaskbar: true,
@@ -12,26 +13,25 @@ class Tools {
       frame: false,
       movable: false,
       show: false,
-      width: 200,
-      height: 200,
+      enableLargerThanScreen: true,
+      width,
+      height,
       transparent: true,
-      alwaysOnTop: true,
       focusable: false,
       webPreferences: {
         nodeIntegration: true
       }
     });
 
-    this.window.loadURL(`file://${path.join(__dirname, 'index.html')}?screen=tools`);
+    this.window.loadURL(`file://${path.join(__dirname, 'index.html')}?screen=canvas`);
     this.window.setVisibleOnAllWorkspaces(true);
+    this.window.setAlwaysOnTop(true, 'screen-saver');
+    this.show();
   }
 
   show() {
-    let display = screen.getPrimaryDisplay();
-    let height = display.bounds.height;
-    this.window.setPosition(0, height / 2, false);
-    this.window.showInactive();
+    this.window.show();
   }
 }
 
-export default Tools;
+export default Canvas;

@@ -1,0 +1,39 @@
+.canvas {
+  #canvas {
+    height: 100vh;
+    width: 100vw;
+  }
+
+  .palette {
+    width: 80px;
+    height: 290px;
+    padding-top: 10px;
+    background-color: #29292B;
+    position: absolute;
+    left: 0;
+    top: calc(50vh - 290px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 6px;
+    color: #FFF;
+
+    svg {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    .color {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 4px solid #FFF;
+      margin-bottom: 5px;
+
+      &.selected {
+        border: 6px solid #FFF;
+      }
+    }
+  }
+}
