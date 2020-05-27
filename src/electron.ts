@@ -256,6 +256,7 @@ function startCounter() {
   counter = new CounterWindow();
   counter.window.on('close', () => counter = null);
   counter.show();
+  application.isRecording = true;
   mainWindow.window.hide();
 }
 
