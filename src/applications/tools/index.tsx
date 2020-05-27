@@ -8,7 +8,9 @@ const Tools : React.FC = () => {
   const [recording, setRecording] = useState<boolean>(false);
 
   const stopRecording = () => {
-    ipcRenderer.send('STOP_RECORDING');
+    if(recording) {
+      ipcRenderer.send('STOP_RECORDING');
+    }
   }
 
   const openCanvas = () => {
