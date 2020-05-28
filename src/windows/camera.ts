@@ -30,21 +30,25 @@ class Camera {
     const query = querystring.stringify({ screen: 'camera', ...params});
     this.window.loadURL(`file://${path.join(__dirname, 'index.html')}?${query}`);
     this.window.setVisibleOnAllWorkspaces(true);
-    this.show();
+    this.show(params);
   }
 
   close() {
     this.window.close();
   }
 
-  show() {
+  show(data) {
     const {x, y} = screen.getCursorScreenPoint();
     const currentDisplay = screen.getDisplayNearestPoint({ x, y });
-    this.window.setPosition(
-      currentDisplay.workArea.x,
-      currentDisplay.workArea.y + currentDisplay.workArea.height - 240,
-      false
-    );
+    if(data.positions) {
+    }
+    else {
+      this.window.setPosition(
+        currentDisplay.workArea.x,
+        currentDisplay.workArea.y + currentDisplay.workArea.height - 240,
+        false
+      );
+    }
     this.window.showInactive();
   }
 }

@@ -8,6 +8,7 @@ import Tools from '@app/applications/tools';
 import QuickStart from '@app/applications/quick_start';
 import Canvas from '@app/applications/canvas';
 import Counter from '@app/applications/counter';
+import Cropper from '@app/applications/cropper';
 import 'bulma/css/bulma.css'
 import '@app/assets/styles/main.scss';
 import querystring from 'querystring';
@@ -33,6 +34,9 @@ switch(params.screen) {
     break;
   case 'counter':
     RootComponet = Counter;
+    break;
+  case 'cropper':
+    RootComponet = Cropper;
     break;
   default:
     RootComponet = Main;

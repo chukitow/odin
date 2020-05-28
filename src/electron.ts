@@ -13,6 +13,7 @@ import ToolsWindow from '@app/windows/tools';
 import QuickStartWindow from '@app/windows/quick_start';
 import CanvasWindow from '@app/windows/canvas';
 import CounterWindow from '@app/windows/counter';
+import CropperWindow from '@app/windows/cropper';
 
 autoUpdater.logger = log;
 
@@ -24,6 +25,7 @@ let toolsWindow : ToolsWindow;
 let quickStart : QuickStartWindow;
 let canvas : CanvasWindow;
 let counter : CounterWindow;
+let cropper : CropperWindow;
 const lockSingleInstance = app.requestSingleInstanceLock();
 
 autoUpdater.checkForUpdates().catch((err) => log.warn(err.message));
@@ -231,6 +233,10 @@ function createMainWindow() {
   });
 
   mainWindow.show();
+
+  cropper = new CropperWindow();
+  cropper.window.on('close', () => cropper = null);
+  //cropper.show();
 }
 
 function createToolsWindow() {
