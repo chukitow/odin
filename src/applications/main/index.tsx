@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { ipcRenderer, remote } from 'electron';
+import { ipcRenderer, remote, webFrame } from 'electron';
 import useMediaDevices from '@app/hooks/useMediaDevices';
 import useRecorder from '@app/hooks/useRecorder';
+import useRecorderMac from '@app/hooks/useRecorderMac';
 import { isEmpty, head } from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import cx from 'classnames';
@@ -11,12 +12,18 @@ export const SCREEN_CAM = 'SCREEN_CAM';
 export const SCREEN = 'SCREEN';
 export const CAM = 'CAM';
 
+export const FULL_SCREEN = 'FULL_SCREEN';
+export const CUSTOM_SIZE = 'CUSTOM_SIZE';
+
 const Main : React.FC = () => {
+  webFrame.setZoomFactor(1);
   const [mode, setMode] = useState<string>(SCREEN_CAM);
+  const [area, setArea] = useState<string>(FULL_SCREEN);
   const [camera, setCamera] = useState<string>('');
   const [microphone, setMicrophone] = useState<string>('');
   const [devices] = useMediaDevices();
   const [startRecording, stopRecording] = useRecorder({ microphone, camera, mode });
+  const [startMacRecording, stopMacRecording] = useRecorderMac({ microphone, camera, mode });
   const cameras = devices.filter(device => device.kind === 'videoinput');
   const microphones = devices.filter(device => device.kind === 'audioinput');
 
@@ -90,12 +97,22 @@ const Main : React.FC = () => {
 
   useEffect(() => {
     ipcRenderer.on('STOP_RECORDING', () => {
-      stopRecording();
+      if(process.platform == 'darwin' && mode !== CAM) {
+        stopMacRecording();
+      }
+      else {
+        stopRecording();
+      }
       ipcRenderer.send('CLOSE_CAMERA');
     });
 
-    ipcRenderer.on('START_RECORDING', () => {
-      startRecording();
+    ipcRenderer.on('START_RECORDING', (_, params) => {
+      if(process.platform == 'darwin' && mode !== CAM) {
+        startMacRecording(params);
+      }
+      else {
+        startRecording(params);
+      }
       ipcRenderer.send('START_RECORDING');
     });
 
@@ -105,8 +122,15 @@ const Main : React.FC = () => {
     }
   }, [
     microphone,
-    camera
+    camera,
+    mode
   ]);
+
+  const openCropper = () => {
+    ipcRenderer.send('OPEN_CROPPER', {
+      deviceId: camera !== 'none' && !isEmpty(camera) ? camera : ''
+    });
+  }
 
   return (
     <div className="main-window">
@@ -135,6 +159,24 @@ const Main : React.FC = () => {
             <FontAwesomeIcon icon="user-circle" />
           </div>
           Cam Only
+        </div>
+      </div>
+
+      <div className="screen-areas disabled">
+        <div
+          onClick={() => {
+            setArea(FULL_SCREEN);
+          }}
+          className={cx('area-option', { selected: area === FULL_SCREEN, disabled: mode == CAM })}>
+          Full Screen
+        </div>
+        <div
+          onClick={() => {
+            setArea(CUSTOM_SIZE);
+            openCropper();
+          }}
+          className={cx('area-option', { selected: area === CUSTOM_SIZE, disabled: mode == CAM })}>
+          Custom Size
         </div>
       </div>
 
@@ -188,7 +230,12 @@ const Main : React.FC = () => {
       <div className="recording-actions">
         <button
           onClick={() => {
-            ipcRenderer.send('START_COUNTER');
+            if(area === CUSTOM_SIZE) {
+              openCropper();
+            }
+            else {
+              ipcRenderer.send('START_COUNTER');
+            }
           }}
           className="button is-large is-fullwidth is-danger">
           Start Recording

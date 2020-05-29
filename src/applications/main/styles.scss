@@ -47,4 +47,34 @@
   .input-sources {
     margin-bottom: 20px;
   }
+
+  .screen-areas {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+    margin-bottom: 10px;
+
+    .area-option {
+      display: flex;
+      height: 40px;
+      align-items: center;
+      padding-left: 10px;
+      margin-bottom: 5px;
+
+      &.selected {
+        border: 1px solid #516BF0;
+        background-color: #F5F8FE
+      }
+
+      &.disabled {
+        opacity: 0.5;
+        pointer-events: none;
+      }
+
+      &:hover {
+        cursor: pointer;
+        background-color: #F5F8FE
+      }
+    }
+  }
 }

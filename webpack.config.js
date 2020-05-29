@@ -45,6 +45,7 @@ module.exports = [
     },
     target: 'electron-renderer',
     devtool: 'source-map',
+    node: false,
     module: {
       rules: [
         {

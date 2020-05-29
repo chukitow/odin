@@ -37,18 +37,16 @@ class Camera {
     this.window.close();
   }
 
-  show(data) {
+  show(params) {
     const {x, y} = screen.getCursorScreenPoint();
     const currentDisplay = screen.getDisplayNearestPoint({ x, y });
-    if(data.positions) {
-    }
-    else {
-      this.window.setPosition(
-        currentDisplay.workArea.x,
-        currentDisplay.workArea.y + currentDisplay.workArea.height - 240,
-        false
-      );
-    }
+    const DEFAULT_X = currentDisplay.workArea.x;
+    const DEFAULT_Y = currentDisplay.workArea.y + currentDisplay.workArea.height - 240;
+    this.window.setPosition(
+      params.x || DEFAULT_X,
+      params.y || DEFAULT_Y,
+      false
+    );
     this.window.showInactive();
   }
 }

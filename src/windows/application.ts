@@ -3,6 +3,7 @@ class Application {
   public isQuiting : boolean = false;
   public isRecording : boolean = false;
   public isDownloading : boolean = false;
+  public screen: ScreenPoint = null; 
 }
 
 if(!application) {

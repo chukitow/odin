@@ -5,6 +5,7 @@ import application from '@app/windows/application';
 import { convert } from '@app/utils/converter';
 import { displayQuickStart, store } from '@app/utils/store';
 import path from 'path';
+import fs from 'fs';
 
 import MainWindow from '@app/windows/main';
 import CameraWindow from '@app/windows/camera';
@@ -92,6 +93,8 @@ else {
 }
 
 ipcMain.on('DISPLAY_CAMERA', displayCamera);
+ipcMain.on('DISPLAY_TOOLS', displayTools);
+ipcMain.on('CLOSE_TOOLS', closeTools);
 ipcMain.on('CLOSE_CAMERA', closeCamera);
 ipcMain.on('START_COUNTER', startCounter);
 ipcMain.on('STOP_COUNTER', stopCounter);
@@ -113,7 +116,6 @@ ipcMain.on('FINISH_QUICK_START', () => {
   app.exit();
 });
 
-
 ipcMain.on('OPEN_CANVAS', () => {
   toolsWindow.window.hide();
   canvas = new CanvasWindow();
@@ -123,6 +125,13 @@ ipcMain.on('OPEN_CANVAS', () => {
 ipcMain.on('CLOSE_CANVAS', () => {
   toolsWindow.window.show();
   canvas.window.close();
+});
+
+ipcMain.on('OPEN_CROPPER', (_, params) => {
+  cropper = new CropperWindow(params);
+  toolsWindow.window.hide();
+  mainWindow.window.hide();
+  cropper.window.on('close', () => cropper = null);
 });
 
 function initApplicationBindings() {
@@ -151,6 +160,10 @@ function initApplicationBindings() {
   if(process.platform === 'darwin') {
     app.dock.hide();
   }
+
+  fs.chmod(path.join(__dirname, 'apreture'), '777', () => {
+    console.log(path.join(__dirname, 'apreture'));
+  });
 }
 
 function createWindow() : void {
@@ -160,7 +173,7 @@ function createWindow() : void {
   else {
     createTray();
     createMainWindow();
-    createToolsWindow();
+    createToolsWindow({});
   }
 }
 
@@ -196,7 +209,7 @@ function createTray() {
       else {
         mainWindow.window.webContents.send('DISPLAY_WINDOW');
         mainWindow.show();
-        createToolsWindow();
+        createToolsWindow({});
       }
     }
   });
@@ -233,16 +246,12 @@ function createMainWindow() {
   });
 
   mainWindow.show();
-
-  cropper = new CropperWindow();
-  cropper.window.on('close', () => cropper = null);
-  //cropper.show();
 }
 
-function createToolsWindow() {
-  toolsWindow = new ToolsWindow();
+function createToolsWindow(params) {
+  toolsWindow = new ToolsWindow(params);
   toolsWindow.window.on('close', () => toolsWindow = null);
-  toolsWindow.show();
+  toolsWindow.show(params);
 }
 
 function closeCamera() {
@@ -258,26 +267,31 @@ function closeTools() {
   }
 }
 
-function startCounter() {
-  counter = new CounterWindow();
+function startCounter(_, params : {} = {}) {
+  counter = new CounterWindow(params);
   counter.window.on('close', () => counter = null);
   counter.show();
   application.isRecording = true;
   mainWindow.window.hide();
+  application.screen = params;
 }
 
 function stopCounter() {
   if(counter) {
     counter.window.close();
   }
-
-  mainWindow.window.webContents.send('START_RECORDING');
+  mainWindow.window.webContents.send('START_RECORDING', application.screen);
+  ipcMain.on('DID_START_RECORDING', () => {
+    if(cropper) {
+      cropper.window.setIgnoreMouseEvents(true);
+    }
+    toolsWindow.window.webContents.send('START_RECORDING');
+  });
 }
 
 function startRecording() {
   log.info('Start recording');
   application.isRecording = true;
-  toolsWindow.window.webContents.send('START_RECORDING');
   tray.setImage(nativeImage.createFromPath(path.join(__dirname, 'assets', 'icons', 'tray_stop.png')))
 }
 
@@ -292,20 +306,32 @@ function stopRecording() {
   if(canvas) {
     canvas.window.close();
   }
+  closeCropper();
   tray.setImage(nativeImage.createFromPath(path.join(__dirname, 'assets', 'icons', 'tray.png')))
 }
 
 function errorRecording() {
   log.info('Error recording');
   application.isRecording = false;
+  application.screen = {};
   toolsWindow.window.webContents.send('STOP_RECORDING');
+  tray.setImage(nativeImage.createFromPath(path.join(__dirname, 'assets', 'icons', 'tray.png')))
+  closeCropper();
 }
 
 function displayCamera(_ : Electron.Event, data: { deviceId: string }) {
   closeCamera();
+  console.log('camara props', data);
   log.info('Display camera');
   cameraWindow = new CameraWindow(data);
   cameraWindow.window.on('close', () => cameraWindow = null);
+}
+
+function displayTools(_, data) {
+  if(toolsWindow) {
+    toolsWindow.window.close();
+  }
+  createToolsWindow(data);
 }
 
 function displayPreview(_ : Electron.Event, data: { filePath: string }) {
@@ -321,4 +347,10 @@ function displayPreview(_ : Electron.Event, data: { filePath: string }) {
     previewWindow.window.setTitle('Preview');
     previewWindow.window.webContents.send('DID_MOUNT', data);
   });
+}
+
+function closeCropper() {
+  if(cropper) {
+    cropper.window.close();
+  }
 }

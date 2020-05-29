@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { remote, ipcRenderer } from 'electron';
-import { isEqual, isEmpty } from 'lodash';
+import { isEqual } from 'lodash';
 import cx from 'classnames';
+import querystring from 'querystring';
 import './styles.scss';
 
 interface Rect {
@@ -24,6 +25,8 @@ const Cropper: React.FC = () => {
   const canvas = useRef(null);
   const [frame, setFrame] = useState<Rect>({...DEFAULT_RECT});
   const [ready, setReady] = useState<boolean>(false);
+  const [recording, setRecording] = useState<boolean>(false);
+  const params = querystring.parse(window.location.search.slice(1));
 
   const bounds = remote.getCurrentWindow().getBounds();
 
@@ -31,12 +34,14 @@ const Cropper: React.FC = () => {
     let rect : Rect = {};
 
     const startPainting = (e: MouseEvent) => {
+      e.preventDefault();
       rect = { width: 0, height: 0};
       rect.startX = e.pageX - canvas.current.offsetLeft;
       rect.startY = e.pageY - canvas.current.offsetTop;
       dragging  = true;
       setReady(false);
       ipcRenderer.send('CLOSE_CAMERA');
+      ipcRenderer.send('CLOSE_TOOLS');
       setFrame(DEFAULT_RECT);
     };
 
@@ -55,12 +60,16 @@ const Cropper: React.FC = () => {
       else {
         setReady(true);
         const { x, y } = getRectPoints(rect);
-        ipcRenderer.send('DISPLAY_CAMERA', {
-          positions: {
-            x,
-            y: y + (Math.abs(rect.height) - CAMERA_HEIGHT),
-          },
+        ipcRenderer.send('DISPLAY_TOOLS', {
+          x,
+          y,
         });
+        ipcRenderer.send('DISPLAY_CAMERA', {
+          deviceId: params.deviceId,
+          x,
+          y: y + (Math.abs(rect.height) - CAMERA_HEIGHT),
+        });
+        removeListeners();
       }
     };
 
@@ -78,18 +87,32 @@ const Cropper: React.FC = () => {
       });
     }
 
+    function removeListeners() {
+      canvas.current.removeEventListener('mousedown', startPainting);
+      canvas.current.removeEventListener('mouseup', finishPainting);
+      canvas.current.removeEventListener('mousemove', draw);
+    }
+
     canvas.current.addEventListener('mousedown', startPainting);
     canvas.current.addEventListener('mouseup', finishPainting);
     canvas.current.addEventListener('mousemove', draw);
 
     return () => {
-    canvas.current.removeEventListener('mousedown', startPainting);
-    canvas.current.removeEventListener('mouseup', finishPainting);
-    canvas.current.removeEventListener('mousemove', draw);
+      removeListeners();
     }
   }, []);
 
   const firstDrag = isEqual(DEFAULT_RECT, frame);
+
+  const startRecording = () => {
+    ipcRenderer.send('START_COUNTER', {
+      x: frame.startX,
+      y: frame.startY,
+      width: frame.width,
+      height: frame.height
+    });
+    setRecording(true);
+  }
 
   return (
     <div className={cx('cropper', { 'first-drag': firstDrag })} ref={canvas}>
@@ -123,8 +146,12 @@ const Cropper: React.FC = () => {
               }}
               className={cx('frame', { ready })}>
                 {
-                  ready &&
-                  <button className="button is-danger is-large">Start Recording</button>
+                  ready && !recording &&
+                  <button
+                    onClick={startRecording}
+                    className="button is-danger is-large">
+                    Start Recording
+                  </button>
                 }
               </div>
             <div
