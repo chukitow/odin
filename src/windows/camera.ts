@@ -38,9 +38,13 @@ class Camera {
   }
 
   show() {
-    let display = screen.getPrimaryDisplay();
-    let height = display.bounds.height;
-    this.window.setPosition(40, height - 240, false);
+    const {x, y} = screen.getCursorScreenPoint();
+    const currentDisplay = screen.getDisplayNearestPoint({ x, y });
+    this.window.setPosition(
+      currentDisplay.workArea.x,
+      currentDisplay.workArea.y + currentDisplay.workArea.height - 240,
+      false
+    );
     this.window.showInactive();
   }
 }

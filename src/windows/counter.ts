@@ -4,8 +4,9 @@ import { BrowserWindow, screen } from 'electron';
 class Counter {
   public window: BrowserWindow;
   constructor() {
-    const { bounds} = screen.getPrimaryDisplay();
-    const { x, y, width, height } = bounds;
+    const cursor = screen.getCursorScreenPoint();
+    const currentDisplay = screen.getDisplayNearestPoint({ x: cursor.x, y: cursor.y });
+    const { x, y, width, height } = currentDisplay.bounds
     this.window = new BrowserWindow({
       x,
       y,

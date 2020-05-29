@@ -27,9 +27,13 @@ class Tools {
   }
 
   show() {
-    let display = screen.getPrimaryDisplay();
-    let height = display.bounds.height;
-    this.window.setPosition(0, height / 2, false);
+    const {x, y} = screen.getCursorScreenPoint();
+    const currentDisplay = screen.getDisplayNearestPoint({ x, y });
+    this.window.setPosition(
+      currentDisplay.workArea.x,
+      currentDisplay.workArea.y + Math.round(currentDisplay.workArea.height / 2),
+      false
+    );
     this.window.showInactive();
   }
 }

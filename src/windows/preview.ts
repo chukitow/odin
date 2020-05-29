@@ -1,5 +1,5 @@
 import path from 'path';
-import { BrowserWindow } from 'electron';
+import { BrowserWindow, screen } from 'electron';
 
 class Preview {
   public window: BrowserWindow;
@@ -19,6 +19,14 @@ class Preview {
   }
 
   show() {
+    const {x, y} = screen.getCursorScreenPoint();
+    const currentDisplay = screen.getDisplayNearestPoint({ x, y });
+    this.window.setPosition(
+      currentDisplay.workArea.x,
+      currentDisplay.workArea.y,
+      false
+    );
+    this.window.center();
     this.window.show();
   }
 

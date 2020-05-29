@@ -271,7 +271,6 @@ function stopCounter() {
 function startRecording() {
   log.info('Start recording');
   application.isRecording = true;
-  toolsWindow.show();
   toolsWindow.window.webContents.send('START_RECORDING');
   tray.setImage(nativeImage.createFromPath(path.join(__dirname, 'assets', 'icons', 'tray_stop.png')))
 }

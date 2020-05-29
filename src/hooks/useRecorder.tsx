@@ -19,8 +19,8 @@ const useRecorder = (props: DeviceSelcted) => {
   const startRecording = async () => {
     try {
       const sources = await desktopCapturer.getSources({ types: ['screen'] });
-      const cursor = remote.screen.getCursorScreenPoint();
-      const activeDisplay = remote.screen.getDisplayNearestPoint({x: cursor.x, y: cursor.y});
+      const { x, y } = remote.getCurrentWindow().getBounds();
+      const activeDisplay = remote.screen.getDisplayNearestPoint({ x, y });
       const screen = sources.find(source => String(source.display_id) == String(activeDisplay.id));
       const audioOptions = props.microphone === 'none' ? { audio: false } : { audio: { deviceId: { exact: props.microphone } } };
 

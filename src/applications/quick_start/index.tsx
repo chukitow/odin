@@ -16,8 +16,6 @@ const ACCESSIBILITY = 'ACCESSIBILITY';
 const QuickStart : React.FC = () => {
   const [step, setStep] = useState<string>(INTRO);
 
-  console.log(step);
-
   const props = {
     [INTRO]: {
       next: () => setStep(FEATURES),
