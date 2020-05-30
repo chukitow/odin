@@ -16,6 +16,7 @@ class Preview {
     });
 
     this.window.loadURL(`file://${path.join(__dirname, 'index.html')}?screen=preview`);
+    this.window.setMenu(null);
   }
 
   show() {

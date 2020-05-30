@@ -34,6 +34,7 @@ class Camera {
 
     const query = querystring.stringify({ screen: 'camera', ...params});
     this.window.loadURL(`file://${path.join(__dirname, 'index.html')}?${query}`);
+    this.window.setAlwaysOnTop(true, 'floating', 9);
     this.window.setVisibleOnAllWorkspaces(true);
     this.show();
   }

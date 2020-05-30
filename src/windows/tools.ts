@@ -34,7 +34,7 @@ class Tools {
       currentDisplay.workArea.y + Math.round(currentDisplay.workArea.height / 2),
       false
     );
-    this.window.setAlwaysOnTop(true, 'floating', 10);
+    this.window.setAlwaysOnTop(true, 'screen-saver', 10);
     this.window.showInactive();
   }
 }
