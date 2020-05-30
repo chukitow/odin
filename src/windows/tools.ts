@@ -12,7 +12,7 @@ class Tools {
       frame: false,
       movable: false,
       show: false,
-      width: 200,
+      width: 40,
       height: 200,
       transparent: true,
       alwaysOnTop: true,
@@ -34,6 +34,7 @@ class Tools {
       currentDisplay.workArea.y + Math.round(currentDisplay.workArea.height / 2),
       false
     );
+    this.window.setAlwaysOnTop(true, 'floating', 10);
     this.window.showInactive();
   }
 }

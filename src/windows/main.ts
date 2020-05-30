@@ -25,6 +25,7 @@ class Main {
     this.window.loadURL(`file://${path.join(__dirname, 'index.html')}`);
     this.window.on('close', this.onClose.bind(this));
     this.window.setVisibleOnAllWorkspaces(true);
+    this.window.setAlwaysOnTop(true, 'floating', 10);
   }
 
   onClose(event: Electron.Event) {

@@ -9,7 +9,14 @@ interface Params {
 class Camera {
   public window: BrowserWindow;
   constructor(params: Params) {
+    const cursor = screen.getCursorScreenPoint();
+    const currentDisplay = screen.getDisplayNearestPoint({ x: cursor.x, y: cursor.y });
+    const { width, height, x, y } = currentDisplay.bounds;
     this.window = new BrowserWindow({
+      width,
+      height,
+      x,
+      y,
       resizable: false,
       skipTaskbar: true,
       maximizable: false,
@@ -17,8 +24,6 @@ class Camera {
       frame: false,
       movable: true,
       show: false,
-      width: 200,
-      height: 200,
       transparent: true,
       alwaysOnTop: true,
       focusable: false,
@@ -38,13 +43,7 @@ class Camera {
   }
 
   show() {
-    const {x, y} = screen.getCursorScreenPoint();
-    const currentDisplay = screen.getDisplayNearestPoint({ x, y });
-    this.window.setPosition(
-      currentDisplay.workArea.x,
-      currentDisplay.workArea.y + currentDisplay.workArea.height - 240,
-      false
-    );
+    this.window.setIgnoreMouseEvents(false);
     this.window.showInactive();
   }
 }

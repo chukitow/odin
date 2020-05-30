@@ -89,6 +89,16 @@ else {
   initApplicationBindings();
 }
 
+ipcMain.on('BLUR', () => {
+  if(process.platform == 'darwin') {
+    log.info('Blur main window');
+    mainWindow.window.hide();
+    if(!application.isRecording) {
+      toolsWindow.window.hide();
+      closeCamera();
+    }
+  }
+})
 ipcMain.on('DISPLAY_CAMERA', displayCamera);
 ipcMain.on('CLOSE_CAMERA', closeCamera);
 ipcMain.on('START_COUNTER', startCounter);
@@ -110,7 +120,6 @@ ipcMain.on('FINISH_QUICK_START', () => {
   app.relaunch();
   app.exit();
 });
-
 
 ipcMain.on('OPEN_CANVAS', () => {
   toolsWindow.window.hide();
@@ -218,17 +227,6 @@ function createMainWindow() {
     closeCamera();
     closeTools();
   })
-
-  mainWindow.window.on('blur', () => {
-    if(process.platform == 'darwin') {
-      log.info('Blur main window');
-      mainWindow.window.hide();
-      if(!application.isRecording) {
-        toolsWindow.window.hide();
-        closeCamera();
-      }
-    }
-  });
 
   mainWindow.show();
 }

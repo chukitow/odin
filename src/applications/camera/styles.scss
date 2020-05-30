@@ -2,6 +2,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  align-self: flex-end;
+  position: absolute;
+  bottom: 40px;
+  left: 40px;
   width: 200px;
   height: 200px;
   border-radius: 50%;
@@ -16,7 +20,6 @@
     height: 200px;
     border-radius: 50%;
     object-fit: cover;
-    -webkit-app-region: drag;
     transform: rotateY(180deg);
   }
 }

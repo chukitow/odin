@@ -1,10 +1,13 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import querystring from 'querystring';
+import { ipcRenderer } from 'electron';
+import Draggable from 'react-draggable';
 import './styles.scss';
 
 const Camera : React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
+  const camera = useRef(null);
   const params = querystring.parse(window.location.search.slice(1));
   const video = useRef(null);
 
@@ -28,17 +31,30 @@ const Camera : React.FC = () => {
     setLoading
   ]);
 
+  useEffect(() => {
+    window.document.addEventListener('click', (event: any) => {
+      if(!event.target.id) {
+        ipcRenderer.send('BLUR');
+      }
+    });
+  }, []);
+
   return (
-    <div className="camera-window">
-      {
-        loading &&
-        <FontAwesomeIcon icon="spinner" size="3x" spin/>
-      }
-      {
-        !loading &&
-        <video ref={video}></video>
-      }
-    </div>
+    <Draggable>
+      <div
+        ref={camera}
+        className="camera-window"
+        id="camera">
+        {
+          loading &&
+          <FontAwesomeIcon icon="spinner" size="3x" id="spinner" spin/>
+        }
+        {
+          !loading &&
+          <video ref={video} id="video"></video>
+        }
+      </div>
+    </Draggable>
   );
 }
 
