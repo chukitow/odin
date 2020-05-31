@@ -1,25 +1,44 @@
 import { useEffect, useState } from 'react';
 import log from 'electron-log';
+import apreture from 'aperture';
 
 interface Device {
   deviceId: string,
-  groupId: string,
   kind: string,
   label: string,
 }
 
 const useMediaDevices = () => {
   const [devices, setDevices] = useState<Device[]>([]);
+  const recorder = apreture();
 
   const refreshDevices = () => {
     navigator.mediaDevices.enumerateDevices()
     .then(function(devices) {
-      setDevices(devices.map(device => ({
+      const mediaDevices = devices.map(device => ({
         deviceId: device.deviceId,
-        groupId: device.groupId,
         kind: device.kind,
         label: device.label,
-      })))
+      }))
+
+      if(process.platform == 'darwin') {
+        apreture.audioDevices().then((devices) => {
+          const microphones = devices.map(device => ({
+            deviceId: device.id,
+            kind: 'audioinput',
+            label: device.name,
+          }))
+
+          setDevices(
+            mediaDevices
+              .filter(device => device.kind !== 'audioinput')
+              .concat(microphones)
+          );
+        });
+      }
+      else {
+        setDevices(mediaDevices);
+      }
     })
     .catch(err => {
       log.warn(err.message);

@@ -16,7 +16,7 @@ const useRecorder = (props: DeviceSelcted) => {
   const mediaRecorder = useRef(null);
   let recorderdChunks = [];
 
-  const startRecording = async () => {
+  const startRecording = async (params : any) => {
     try {
       const sources = await desktopCapturer.getSources({ types: ['screen'] });
       const { x, y } = remote.getCurrentWindow().getBounds();
@@ -45,6 +45,7 @@ const useRecorder = (props: DeviceSelcted) => {
       }
 
       mediaRecorder.current.start();
+      ipcRenderer.send('DID_START_RECORDING');
       mediaRecorder.current.onstop = async () => {
         log.info('creating file');
         const blob = new Blob(recorderdChunks, {

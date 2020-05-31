@@ -45,7 +45,7 @@ export const convert = (data: { src: string, filePath: string, format: string },
     render.window.webContents.send('conversion:end')
   }
 
-  if(data.format == 'webm') {
+  if(path.extname(data.src).includes(data.format)) {
     return fs.copyFile(data.src, data.filePath, (err) => {
       if(err) {
         onError(err);

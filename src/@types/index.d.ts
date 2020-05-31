@@ -14,3 +14,10 @@ declare module "*.gif" {
   const src: string;
   export default src;
 }
+
+type ScreenPoint = {
+  x?: number,
+  y?: number,
+  width?: number,
+  height?: number,
+}

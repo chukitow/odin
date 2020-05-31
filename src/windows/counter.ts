@@ -3,15 +3,15 @@ import { BrowserWindow, screen } from 'electron';
 
 class Counter {
   public window: BrowserWindow;
-  constructor() {
+  constructor(params) {
     const cursor = screen.getCursorScreenPoint();
     const currentDisplay = screen.getDisplayNearestPoint({ x: cursor.x, y: cursor.y });
     const { x, y, width, height } = currentDisplay.bounds
     this.window = new BrowserWindow({
-      x,
-      y,
-      width,
-      height,
+      x: params.x || x,
+      y: params.y || y,
+      width: params.width || width,
+      height: params.height || height,
       resizable: false,
       skipTaskbar: true,
       maximizable: false,

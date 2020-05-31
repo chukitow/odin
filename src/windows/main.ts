@@ -16,7 +16,7 @@ class Main {
       movable: process.platform != 'darwin',
       show: false,
       width: 350,
-      height: process.platform == 'darwin' ? 250 : 280,
+      height: process.platform == 'darwin' ? 370 : 280,
       alwaysOnTop: true,
       webPreferences: {
         nodeIntegration: true

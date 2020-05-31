@@ -30,19 +30,21 @@ class Camera {
     const query = querystring.stringify({ screen: 'camera', ...params});
     this.window.loadURL(`file://${path.join(__dirname, 'index.html')}?${query}`);
     this.window.setVisibleOnAllWorkspaces(true);
-    this.show();
+    this.show(params);
   }
 
   close() {
     this.window.close();
   }
 
-  show() {
+  show(params) {
     const {x, y} = screen.getCursorScreenPoint();
     const currentDisplay = screen.getDisplayNearestPoint({ x, y });
+    const DEFAULT_X = currentDisplay.workArea.x;
+    const DEFAULT_Y = currentDisplay.workArea.y + currentDisplay.workArea.height - 240;
     this.window.setPosition(
-      currentDisplay.workArea.x,
-      currentDisplay.workArea.y + currentDisplay.workArea.height - 240,
+      params.x || DEFAULT_X,
+      params.y || DEFAULT_Y,
       false
     );
     this.window.showInactive();
