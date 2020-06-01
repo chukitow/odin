@@ -6,40 +6,14 @@ import { writeFile } from 'fs';
 import { uniqueId } from 'lodash';
 import path from 'path';
 import log from 'electron-log';
+import UIImageEditor from 'tui-image-editor';
+import 'tui-image-editor/dist/tui-image-editor.min.css';
 import './styles.scss';
 
 const ImageEditor : React.FC = () => {
-  const imgPreview = useRef(null);
+  const canvas = useRef(null);
+  const editor = useRef(null);
   const [loading, setLoading] = useState(true);
-  useEffect(() => {
-    ipcRenderer.on('DID_MOUNT', async (_, data) => {
-      try {
-        const image = await jimp.read(data.path);
-        const { x, y } = remote.getCurrentWindow().getBounds();
-        const activeDisplay = remote.screen.getDisplayNearestPoint({ x, y });
-        const { width, height } = activeDisplay.bounds;
-        image
-        .resize(width, height)
-        .crop(data.x, data.y, data.width, data.height);
-        const base64 = await new Promise((resolve, reject) => {
-          image.getBase64('image/png', (err, base64) => {
-            if(err) {
-              reject(err);
-            }
-            else {
-              resolve(base64);
-            }
-          });
-        });
-        imgPreview.current.src = base64;
-        setLoading(false);
-      } catch(err) {
-        log.warn(err.message);
-      }
-    });
-  }, [
-    setLoading
-  ]);
 
   const save = async () => {
     const { filePath } = await remote.dialog.showSaveDialog({
@@ -51,7 +25,7 @@ const ImageEditor : React.FC = () => {
       return;
     }
 
-    const srcBase64 = imgPreview.current.src.replace(/^data:image\/png;base64,/, "");
+    const srcBase64 = canvas.current.toDataURL().replace(/^data:image\/png;base64,/, "");
 
     writeFile(filePath, srcBase64, 'base64', (err) => {
       if(err) {
@@ -72,6 +46,70 @@ const ImageEditor : React.FC = () => {
     });
   }
 
+  const replaceUIElements = () => {
+    document.querySelector('.tui-image-editor-header-logo').remove()
+    const buttons = document.querySelector('.tui-image-editor-header-buttons');
+    buttons.children[0].remove();
+    buttons.children[0].remove();
+
+    const downloadButton = document.createElement('button');
+    downloadButton.classList.add('tui-image-editor-download-btn');
+    downloadButton.textContent = 'Download';
+    downloadButton.onclick = () => {
+     save();
+    }
+
+    buttons.appendChild(downloadButton);
+  };
+
+  useEffect(() => {
+    ipcRenderer.on('DID_MOUNT', async (_, data) => {
+      try {
+        const image = await jimp.read(data.path);
+        const { x, y } = remote.getCurrentWindow().getBounds();
+        const activeDisplay = remote.screen.getDisplayNearestPoint({ x, y });
+        const { width, height } = activeDisplay.bounds;
+        image
+        .resize(width, height)
+        .crop(data.x, data.y, data.width, data.height);
+        const base64 : string = await new Promise((resolve, reject) => {
+          image.getBase64('image/png', (err, base64) => {
+            if(err) {
+              reject(err);
+            }
+            else {
+              resolve(base64);
+            }
+          });
+        });
+
+        setLoading(false);
+        canvas.current = new UIImageEditor(editor.current, {
+          includeUI: {
+            loadImage: {
+              path: base64,
+              name: 'SampleImage'
+            },
+            menu: ['shape', 'crop', 'draw', 'text'],
+            menuBarPosition: 'bottom'
+          },
+          cssMaxWidth: 900,
+          cssMaxHeight: 700,
+         selectionStyle: {
+           cornerSize: 20,
+           rotatingPointOffset: 70
+         }
+       });
+
+       replaceUIElements();
+      } catch(err) {
+        log.warn(err.message);
+      }
+    });
+  }, [
+    setLoading
+  ]);
+
   return (
     <div className="image-editor-window">
       <div className="editor">
@@ -82,13 +120,8 @@ const ImageEditor : React.FC = () => {
             loading &&
             <FontAwesomeIcon icon="spinner" size="3x" id="spinner" spin/>
           }
-          <img ref={imgPreview} style={{ display: loading ? 'none' : 'block' }}/>
+          <div ref={editor} />
         </div>
-      </div>
-      <div className="toolbar">
-        <button
-          onClick={save}
-          className="button">Save</button>
       </div>
     </div>
   );

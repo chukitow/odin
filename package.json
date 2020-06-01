@@ -65,6 +65,7 @@
     "react-dom": "^16.13.1",
     "react-draggable": "^4.4.2",
     "screenshot-desktop": "^1.12.1",
-    "tempy": "^0.5.0"
+    "tempy": "^0.5.0",
+    "tui-image-editor": "^3.9.0"
   }
 }

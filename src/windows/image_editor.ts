@@ -31,6 +31,7 @@ class ImageEditor {
     this.window.center();
     this.window.show();
     this.window.setTitle('Screenshot Editor');
+    this.window.webContents.openDevTools();
   }
 
   close() {
