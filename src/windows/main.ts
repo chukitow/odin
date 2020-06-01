@@ -15,7 +15,7 @@ class Main {
       frame: process.platform != 'darwin',
       movable: process.platform != 'darwin',
       show: false,
-      width: 350,
+      width: 450,
       height: process.platform == 'darwin' ? 250 : 280,
       alwaysOnTop: true,
       webPreferences: {

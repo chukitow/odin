@@ -16,7 +16,7 @@ const Main : React.FC = () => {
   const [camera, setCamera] = useState<string>('');
   const [microphone, setMicrophone] = useState<string>('');
   const [devices] = useMediaDevices();
-  const [startRecording, stopRecording] = useRecorder({ microphone, camera, mode });
+  const [startRecording, stopRecording, takeScreenshot] = useRecorder({ microphone, camera, mode });
   const cameras = devices.filter(device => device.kind === 'videoinput');
   const microphones = devices.filter(device => device.kind === 'audioinput');
 
@@ -38,6 +38,10 @@ const Main : React.FC = () => {
       setMode(CAM);
     }
   }
+
+  const openCropper = () => {
+    ipcRenderer.send('OPEN_CROPPER', { screenshot: true });
+  };
 
   useEffect(() => {
     if(!isEmpty(cameras) && camera == '') {
@@ -99,9 +103,14 @@ const Main : React.FC = () => {
       ipcRenderer.send('START_RECORDING');
     });
 
+    ipcRenderer.on('TAKE_SCREENSHOT', (_, data) => {
+      takeScreenshot(data);
+    });
+
     return () => {
       ipcRenderer.removeAllListeners('STOP_RECORDING');
       ipcRenderer.removeAllListeners('START_RECORDING');
+      ipcRenderer.removeAllListeners('TAKE_SCREENSHOT');
     }
   }, [
     microphone,
@@ -135,6 +144,14 @@ const Main : React.FC = () => {
             <FontAwesomeIcon icon="user-circle" />
           </div>
           Cam Only
+        </div>
+        <div
+          onClick={openCropper}
+          className="mode beta">
+          <div>
+            <FontAwesomeIcon icon="image" />
+          </div>
+          Screenshot
         </div>
       </div>
 

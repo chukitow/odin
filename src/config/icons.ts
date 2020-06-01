@@ -5,7 +5,8 @@ import {
   faMicrophone,
   faCamera,
   faSpinner,
-  faPaintBrush
+  faPaintBrush,
+  faImage
 } from '@fortawesome/free-solid-svg-icons';
 
 library.add(
@@ -14,5 +15,6 @@ library.add(
   faMicrophone,
   faCamera,
   faSpinner,
-  faPaintBrush
+  faPaintBrush,
+  faImage
 );

@@ -40,6 +40,7 @@ module.exports = [
   },
   {
     mode,
+    node: false,
     entry: {
       index: path.resolve('./src/index.tsx'),
     },

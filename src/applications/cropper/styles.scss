@@ -1,0 +1,43 @@
+.cropper {
+  height: 100vh;
+  width: 100vw;
+
+  &.first-drag {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #233245;
+    opacity: 0.5;
+
+    .drag-instructions {
+      width: 300px;
+      height: 100px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #FFF;
+      font-size: 20px;
+      border-radius: 10px;
+    }
+  }
+
+  .top, .bottom, .left, .right {
+    background-color: #233245;
+    opacity: 0.5;
+  }
+
+  .middle {
+    display: flex;
+    flex: 1;
+  }
+
+  .frame.ready {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .button:hover {
+      cursor: pointer;
+    }
+  }
+}

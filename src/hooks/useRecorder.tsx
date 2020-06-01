@@ -1,10 +1,12 @@
 import { useRef } from 'react';
 import { CAM } from '@app/applications/main';
-import { desktopCapturer, ipcRenderer, remote } from 'electron';
+import { desktopCapturer, ipcRenderer, remote, shell } from 'electron';
 import { writeFile } from 'fs';
 import log from 'electron-log';
 import tempy from 'tempy';
 import path from 'path';
+import { get, head } from 'lodash';
+import Screenshot from 'screenshot-desktop';
 
 interface DeviceSelcted {
   microphone: string,
@@ -16,29 +18,35 @@ const useRecorder = (props: DeviceSelcted) => {
   const mediaRecorder = useRef(null);
   let recorderdChunks = [];
 
+  const getStream = async () => {
+    const sources = await desktopCapturer.getSources({ types: ['screen'] });
+    const { x, y } = remote.getCurrentWindow().getBounds();
+    const activeDisplay = remote.screen.getDisplayNearestPoint({ x, y });
+    const screen = sources.find(source => String(source.display_id) == String(activeDisplay.id));
+    const audioOptions = props.microphone === 'none' ? { audio: false } : { audio: { deviceId: { exact: props.microphone } } };
+
+    const constrains : any = {
+      audio: false,
+      video: {
+        ...videoOptions({ ...props, screen_id: screen.id}),
+      }
+    };
+
+    const videoStream = await window.navigator.mediaDevices.getUserMedia(constrains);
+    if(audioOptions.audio != false) {
+      const audioStream = await window.navigator.mediaDevices.getUserMedia({ video: false, ...audioOptions});
+      let tracks = audioStream.getAudioTracks();
+      for(const track of tracks) {
+        videoStream.addTrack(track);
+      }
+    }
+
+    return videoStream;
+  }
+
   const startRecording = async () => {
     try {
-      const sources = await desktopCapturer.getSources({ types: ['screen'] });
-      const { x, y } = remote.getCurrentWindow().getBounds();
-      const activeDisplay = remote.screen.getDisplayNearestPoint({ x, y });
-      const screen = sources.find(source => String(source.display_id) == String(activeDisplay.id));
-      const audioOptions = props.microphone === 'none' ? { audio: false } : { audio: { deviceId: { exact: props.microphone } } };
-
-      const constrains : any = {
-        audio: false,
-        video: {
-          ...videoOptions({ ...props, screen_id: screen.id}),
-        }
-      };
-
-      const videoStream = await window.navigator.mediaDevices.getUserMedia(constrains);
-      if(audioOptions.audio != false) {
-        const audioStream = await window.navigator.mediaDevices.getUserMedia({ video: false, ...audioOptions});
-        let tracks = audioStream.getAudioTracks();
-        for(const track of tracks) {
-          videoStream.addTrack(track);
-        }
-      }
+      const videoStream = await getStream();
       mediaRecorder.current = new window.MediaRecorder(videoStream);
       mediaRecorder.current.ondataavailable = (e : any) => {
         recorderdChunks.push(e.data);
@@ -80,7 +88,35 @@ const useRecorder = (props: DeviceSelcted) => {
     mediaRecorder.current.stop();
   }
 
-  return [startRecording, stopRecording] as const;
+  const takeScreenshot = async (data) => {
+    try {
+      const filePath = path.join(tempy.directory(), `Screenshot-${Date.now()}.png`);
+      const displays = await Screenshot.listDisplays();
+      const { x, y } = remote.getCurrentWindow().getBounds();
+      const activeDisplay = remote.screen.getDisplayNearestPoint({ x, y });
+      const screen = displays.find(display => String(display.id) == String(activeDisplay.id));
+      const bufferImage = await Screenshot({
+        format: 'png',
+        screen: get(screen, 'id', '') || get(head(displays), 'id')
+      });
+      const tmpImagePath : string = await new Promise((resolve, reject) => {
+        writeFile(filePath, bufferImage, (err) => {
+          if(err) {
+            reject(err);
+          }
+          else {
+            resolve(filePath);
+          }
+        });
+      });
+
+      ipcRenderer.send('OPEN_IMAGE_EDITOR', { path: tmpImagePath, ...data });
+    } catch(err) {
+      log.warn(err.message);
+    }
+  }
+
+  return [startRecording, stopRecording, takeScreenshot] as const;
 }
 
 interface VideoSelection {

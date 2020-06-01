@@ -14,7 +14,8 @@
     "url": "https://github.com/chukitow/odin/issues"
   },
   "scripts": {
-    "build": "./node_modules/webpack/bin/webpack.js --config ./webpack.config.js",
+    "copy:bin": "node ./scripts/binaries.js",
+    "build": "./node_modules/webpack/bin/webpack.js --config ./webpack.config.js && yarn copy:bin",
     "start": "npm run build && electron --enable-transparent-visuals --disable-gpu ./build/electron.js",
     "postinstall": "electron-builder install-app-deps",
     "package:mac": "yarn build && electron-builder -c.extraMetadata.main=build/electron.js --mac --publish=never",
@@ -58,10 +59,12 @@
     "electron-notarize": "^0.3.0",
     "electron-store": "^5.1.1",
     "fluent-ffmpeg": "^2.1.2",
+    "jimp": "^0.12.1",
     "lodash": "^4.17.15",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-draggable": "^4.4.2",
+    "screenshot-desktop": "^1.12.1",
     "tempy": "^0.5.0"
   }
 }

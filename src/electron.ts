@@ -13,6 +13,8 @@ import ToolsWindow from '@app/windows/tools';
 import QuickStartWindow from '@app/windows/quick_start';
 import CanvasWindow from '@app/windows/canvas';
 import CounterWindow from '@app/windows/counter';
+import CropperWindow from '@app/windows/cropper';
+import ImageEditorWindow from '@app/windows/image_editor';
 
 autoUpdater.logger = log;
 
@@ -24,6 +26,8 @@ let toolsWindow : ToolsWindow;
 let quickStart : QuickStartWindow;
 let canvas : CanvasWindow;
 let counter : CounterWindow;
+let cropper : CropperWindow;
+let imageEditor : ImageEditorWindow;
 const lockSingleInstance = app.requestSingleInstanceLock();
 
 autoUpdater.checkForUpdates().catch((err) => log.warn(err.message));
@@ -101,6 +105,8 @@ ipcMain.on('BLUR', () => {
 })
 ipcMain.on('DISPLAY_CAMERA', displayCamera);
 ipcMain.on('CLOSE_CAMERA', closeCamera);
+ipcMain.on('DISPLAY_TOOLS', displayTools);
+ipcMain.on('CLOSE_TOOLS', closeTools);
 ipcMain.on('START_COUNTER', startCounter);
 ipcMain.on('STOP_COUNTER', stopCounter);
 ipcMain.on('START_RECORDING', startRecording);
@@ -130,6 +136,41 @@ ipcMain.on('OPEN_CANVAS', () => {
 ipcMain.on('CLOSE_CANVAS', () => {
   toolsWindow.window.show();
   canvas.window.close();
+});
+
+ipcMain.on('OPEN_CROPPER', (_, params) => {
+  cropper = new CropperWindow(params);
+  toolsWindow.window.hide();
+  mainWindow.window.hide();
+  closeCamera();
+  cropper.window.on('close', () => cropper = null);
+});
+
+ipcMain.on('TAKE_SCREENSHOT', (_, data: any) => {
+  closeCropper();
+  if(data.height > 0 && data.width > 0) {
+    mainWindow.window.webContents.send('TAKE_SCREENSHOT', data);
+  }
+});
+
+ipcMain.on('OPEN_IMAGE_EDITOR', (_, data) => {
+  imageEditor = new ImageEditorWindow(data);
+  imageEditor.window.on('close', () => imageEditor = null);
+  imageEditor.window.once('ready-to-show', () => {
+    imageEditor.show();
+    imageEditor.window.setTitle('Screenshot Editor');
+    imageEditor.window.webContents.send('DID_MOUNT', data);
+  });
+});
+
+ipcMain.on('NOTIFICATION', (event, data) => {
+  const notification = new Notification();
+  notification.title = data.title;
+  notification.body = data.body;
+  notification.on('click', () => {
+    event.sender.send(`NOTIFICATION:click:${data.id}`);
+  })
+  notification.show();
 });
 
 function initApplicationBindings() {
@@ -313,4 +354,17 @@ function displayPreview(_ : Electron.Event, data: { filePath: string }) {
     previewWindow.window.setTitle('Preview');
     previewWindow.window.webContents.send('DID_MOUNT', data);
   });
+}
+
+function displayTools() {
+  if(toolsWindow) {
+    toolsWindow.window.close();
+  }
+  createToolsWindow();
+}
+
+function closeCropper() {
+  if(cropper) {
+    cropper.window.close();
+  }
 }
