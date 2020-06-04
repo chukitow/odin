@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import querystring from 'querystring';
-import { ipcRenderer } from 'electron';
+import { ipcRenderer, remote } from 'electron';
 import Draggable from 'react-draggable';
 import './styles.scss';
 
@@ -32,11 +32,13 @@ const Camera : React.FC = () => {
   ]);
 
   useEffect(() => {
-    window.document.addEventListener('click', (event: any) => {
-      if(!event.target.id) {
-        ipcRenderer.send('BLUR');
-      }
+    camera.current.addEventListener('mouseenter', () => {
+      remote.getCurrentWindow().setIgnoreMouseEvents(false);
     });
+
+    camera.current.addEventListener('mouseleave', () => {
+      remote.getCurrentWindow().setIgnoreMouseEvents(true, { forward: true })
+    })
   }, []);
 
   return (

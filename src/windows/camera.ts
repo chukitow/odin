@@ -44,7 +44,7 @@ class Camera {
   }
 
   show() {
-    this.window.setIgnoreMouseEvents(false);
+    this.window.setIgnoreMouseEvents(true, { forward: true });
     this.window.showInactive();
   }
 }

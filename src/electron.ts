@@ -94,14 +94,6 @@ else {
 }
 
 ipcMain.on('BLUR', () => {
-  if(process.platform == 'darwin') {
-    log.info('Blur main window');
-    mainWindow.window.hide();
-    if(!application.isRecording) {
-      toolsWindow.window.hide();
-      closeCamera();
-    }
-  }
 })
 ipcMain.on('DISPLAY_CAMERA', displayCamera);
 ipcMain.on('CLOSE_CAMERA', closeCamera);
@@ -269,6 +261,16 @@ function createMainWindow() {
     closeTools();
   })
 
+  mainWindow.window.on('blur', () => {
+    if(process.platform == 'darwin') {
+      log.info('Blur main window');
+      mainWindow.window.hide();
+      if(!application.isRecording) {
+        toolsWindow.window.hide();
+        closeCamera();
+      }
+    }
+  });
   mainWindow.show();
 }
 
